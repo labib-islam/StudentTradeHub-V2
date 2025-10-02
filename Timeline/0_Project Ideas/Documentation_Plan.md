@@ -1,5 +1,6 @@
 09/10
 RECAP OF TODAY'S MEETING
+
 3 ideas raised and discussed:
 - Delivering Service 
 - Tinder for Study Groups (using either Google meet or Zoom as features)
@@ -17,6 +18,7 @@ Activity to do before tomorrow:
 
 09/11
 RECAP OF TODAY'S MEETING
+
 1. Student Peer-to-Peer Marketplace (Web/Mobile App)
 - discussion forum (integrating the lost and found system)
 - delivering service as a feature after a user purchases an item(instead of implementing a map, we can implement phases of delivery)
@@ -71,6 +73,7 @@ Weeks 1–3: Planning → Weeks 4–7: Core building → Weeks 8–10: Improveme
 
 09/16
 RECAP OF TODAY'S MEETING
+
 Why this project & problem we are trying to solve?
 Doing this for students only, to encourage students to buy and sell for each other at cheaper (affordable) prices
 The website is more designed for students 
@@ -111,9 +114,31 @@ Database – MongoDB (everyone can see) instead of MySQL (everyone has to host i
 
 09/18
 RECAP OF TODAY'S MEETING
+
 We worked on the project proposal to be submitted tomorrow.
 We changed the name of the project from Student Peer-to-Peer Marketplace to Student TradeHub.
 Anya designed a flowchart to be used for the system design.
+
+10/02
+RECAP OF TODAY'S MEETING
+
+Environment Setup
+•	Labib and Nafiur will take the lead on setting up the project environment.
+•	This includes configuring dependencies, ensuring compatibility, and preparing the local dev setup for everyone.
+
+Development Workflow
+1.	Write the Code – Team members will work on assigned features in their own branches.
+2.	Pull Requests – Completed features will be pushed to GitHub and submitted for review.
+3.	Code Review – Other team members will review each pull request for quality, correctness, and consistency.
+4.	Integration – After approval, code will be merged into the main branch and integrated with the production environment.
+   
+Collaboration & Planning
+•	A library group room will be booked for a hands-on session to walk through how we plan to push and manage code in the repository.
+•	This session will help everyone get aligned on the Git workflow and contribution process.
+
+Repository Updates
+•	The TA and Professor have been added to the GitHub repository for transparency and supervision.
+•	The repository has been switched back to private for security and proper version control.
 
 
 
