@@ -140,5 +140,45 @@ Repository Updates
 •	The TA and Professor have been added to the GitHub repository for transparency and supervision.
 •	The repository has been switched back to private for security and proper version control.
 
+10/07
+RECAP OF TODAY'S MEETING
+
+1. Project Milestones
+Milestone 1 (MVP):
+Focus on building the Minimum Viable Product — the simplest version of the system that demonstrates the core functionality and value of the project.
+Milestone 2 (Extended Features):
+This phase will focus on adding additional features and improvements that enhance the MVP, such as optional modules or UI/UX refinements.
+The team agreed that milestones may be structured either by iteration or version, depending on guidance from the professor or TA. A follow-up discussion will be scheduled to confirm the preferred structure.
+
+2. Team Structure & Issue Management
+Each milestone will be divided into iterations or project phases, each containing several issues categorized as user stories.
+A GitHub issue template has been created to standardize reporting and tracking across the team.
+Every issue will include:
+I.	Priority: High, Medium, or Low — based on the importance of the feature or fix.
+II.	Risk Level: Indicates how likely the issue is to affect system stability (e.g., “Low Risk”, “High Risk”).
+III.	Story Points: Represent the estimated effort required to complete the issue.
+IV.	Estimated Time: The tentative completion time for the issue.
+V.	Demo Steps: Clear, reproducible steps that demonstrate the feature’s functionality once implemented.
+VI.	Test Steps: Procedures to verify that the implementation behaves as expected.
+The team will decide collaboratively how to assign story points and distribute them evenly among members to ensure balanced workload and accountability.
+
+3. Collaboration and Support
+If any team member encounters an obstacle, they are encouraged to reach out for help rather than working in isolation.
+Open communication and collaboration will be key to maintaining steady progress and ensuring project quality.
+
+4. Sprint Meetings (Stand-ups)
+Each sprint will include three short stand-up meetings (15–20 minutes each).
+During these sessions, every member will briefly share:
+i.	What they are currently working on
+ii.	What tasks remain to be done
+iii.	Any challenges or blockers encountered
+iv.	How they plan to resolve those challenges
+v.	This ensures continuous progress tracking and early detection of potential issues.
+
+Next Steps
+•	Confirm with the professor or TA whether milestones should be organized by iterations or versions.
+•	Finalize the story point allocation and agree on the priority/risk classification standards.
+•	Begin populating the GitHub repository with the issue templates and milestone breakdowns.
+•	Schedule the next stand-up meeting and finalize the MVP goals for Milestone 1.
 
 
