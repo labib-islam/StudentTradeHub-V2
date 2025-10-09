@@ -179,6 +179,54 @@ Next Steps
 •	Confirm with the professor or TA whether milestones should be organized by iterations or versions.
 •	Finalize the story point allocation and agree on the priority/risk classification standards.
 •	Begin populating the GitHub repository with the issue templates and milestone breakdowns.
-•	Schedule the next stand-up meeting and finalize the MVP goals for Milestone 1.
+•	Schedule the next stand-up meeting and finalize the MVP goals for Milestone 
 
+10/02
+RECAP OF TODAY'S MEETING
+
+Discussion Summary
+Today’s meeting focused on setting up the team’s development environment, aligning on Git configuration, and defining the tasks for the first iteration (Sprint 1) of the project.
+
+Administrative Updates
+1.	The team officially switched to using MUN (Memorial University) email addresses for all project communications and GitHub integrations.
+2.	Installed and configured Git on local machines using the following commands:
+	git config --global user.name "tomisiiiin"
+	git config --global user.email "oaolaiya@mun.ca"
+These commands ensure that commits are linked to the correct GitHub identity and institutional email.
+
+Project Setup & Configuration
+•	Confirmed that GitHub will serve as the central code repository for version control.
+•	Each team member has appropriate access permissions to clone, pull, push, and create pull requests within the repository.
+•	The repository is now set to private for security and academic compliance.
+•	The professor and TA were successfully added to the repository for review and supervision.
+
+Tasks – First Iteration (Sprint 1)
+The team planned the initial development sprint with assigned responsibilities as follows:
+Task	Description	Assigned To
+
+| **Task** | **Description** | **Assigned To** |
+|-----------|------------------|------------------|
+| **Initialize Frontend** | Set up the React environment and basic project structure. | Nafiur |
+| **Initialize Backend** | Configure the Node.js server, Express app, and file structure. | Labib |
+| **Set Up Database** | Establish and connect MongoDB to the backend. | Yixuan |
+| **Create User Models** | Build user schema in the backend and develop the frontend login & signup pages. | Anya |
+| **Create Routes & Controllers** | Implement backend routes and controllers for user creation and authentication. | Yi |
+| **Implement JWT Authentication** | Secure user sessions with JSON Web Tokens after routes and models are completed. | Labib |
+| **Session State Management** | Manage user state and authentication flow in the frontend. | Nafiur |
+| **Backend Documentation** | Write detailed backend API and setup documentation. | Minhanjul |
+| **Frontend Documentation** | Document the frontend setup, component structure, and workflows. | Tommy |
+
+Issue Tracking
+•	Each team member is responsible for creating GitHub issues for their assigned tasks using the standard issue template.
+•	Issues should include:
+o	Story points
+o	Priority (High / Medium / Low)
+o	Risk level
+o	Demo and test steps
+o	Estimated time to complete
+
+Next Steps
+•	Complete environment setup and confirm successful frontend–backend integration.
+•	Begin implementing assigned tasks and submit pull requests for review.
+•	Schedule the next meeting to evaluate progress and resolve any setup challenges.
 
