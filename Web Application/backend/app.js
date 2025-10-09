@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
@@ -18,7 +19,18 @@ app.use(
   })
 );
 
-app.listen(port);
+
+// Connect to Database [MongoDB]
+mongoose
+  .connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.we8cyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+  .then(() => {
+    app.listen(port);
+    console.log("Connected to Database");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 
 // Middleware: To parse incoming JSON request
 app.use(express.json());
