@@ -190,8 +190,11 @@ Today’s meeting focused on setting up the team’s development environment, al
 Administrative Updates
 1.	The team officially switched to using MUN (Memorial University) email addresses for all project communications and GitHub integrations.
 2.	Installed and configured Git on local machines using the following commands:
+   
 	git config --global user.name "tomisiiiin"
+
 	git config --global user.email "oaolaiya@mun.ca"
+
 These commands ensure that commits are linked to the correct GitHub identity and institutional email.
 
 Project Setup & Configuration
@@ -219,6 +222,7 @@ Task	Description	Assigned To
 Issue Tracking
 •	Each team member is responsible for creating GitHub issues for their assigned tasks using the standard issue template.
 •	Issues should include:
+
 o	Story points
 o	Priority (High / Medium / Low)
 o	Risk level
