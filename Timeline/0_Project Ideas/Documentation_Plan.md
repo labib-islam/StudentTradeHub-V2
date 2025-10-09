@@ -181,7 +181,7 @@ Next Steps
 •	Begin populating the GitHub repository with the issue templates and milestone breakdowns.
 •	Schedule the next stand-up meeting and finalize the MVP goals for Milestone 
 
-10/02
+10/08
 RECAP OF TODAY'S MEETING
 
 Discussion Summary
