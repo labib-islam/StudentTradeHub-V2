@@ -103,4 +103,26 @@ const logout = async (req, res) => {
   }
 };
 
-export default { signup, login, logout };
+// Get current user
+const getCurrentUser = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded token:', decoded);
+    const existingUser = await User.findOne({ email: decoded.userEmail }).select("+password");
+
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(existingUser);
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+export default { signup, login, logout, getCurrentUser };

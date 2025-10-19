@@ -1,14 +1,12 @@
 'use client';
-// import { signIn } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { PiEyeLight, PiEyeSlash } from 'react-icons/pi';
+import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
-    // Create Supabase client
     const router = useRouter();
-
-
+    const { user, loading, login, checkAuth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +18,12 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (!loading && user) {
+            router.push('/');
+        }
+    }, [user, loading, router]);
 
     // Validate email format
     const validateEmail = (email) => {
@@ -67,20 +70,31 @@ const Login = () => {
 
         // Proceed with login
         try {
-            const { status } = await signIn(email, password);
-            if (status === 'success') {
-                router.push('/'); // Redirect to home page on success
-            } else {
-                setError(status);
-            }
+            await login({ email, password });
+            await checkAuth();
+            router.push('/'); // Redirect to home page on success
         }
         catch (err) {
-            setError('An error occurred while signing in');
+            setError(err.message || 'An error occurred while signing in');
             console.error('Login error:', err);
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-lg">Loading...</div>
+            </div>
+        );
+    }
+
+    // Don't render the form if user is authenticated
+    if (user) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center flex-col">
