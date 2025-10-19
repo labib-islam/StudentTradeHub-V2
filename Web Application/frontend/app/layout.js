@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
   title: "Student Trade Hub",
@@ -12,7 +13,9 @@ export default function RootLayout({ children }) {
       <body
         className="bg-gradient-to-t from-slate-900 to-slate-700 text-gray-100 min-h-screen font-sans"
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

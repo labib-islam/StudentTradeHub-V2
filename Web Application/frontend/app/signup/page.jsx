@@ -2,10 +2,11 @@
 import { useState, useEffect } from 'react';
 import { PiEyeLight, PiEyeSlash } from 'react-icons/pi';
 import { useRouter } from 'next/navigation';
-// import { signUp } from '@/lib/auth';
+import { useAuth } from '@/context/AuthContext';
 
 const SignUp = () => {
     const router = useRouter();
+    const { user, loading, signup, checkAuth } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         first_name: '',
@@ -24,6 +25,13 @@ const SignUp = () => {
         hasNumber: false,
         hasSpecialChar: false
     });
+
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (!loading && user) {
+            router.push('/');
+        }
+    }, [user, loading, router]);
 
 
     // Check password strength when password changes
@@ -66,7 +74,8 @@ const SignUp = () => {
 
     // Validate email format
     const validateEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Accept emails that end with @mun.ca (case-insensitive)
+        const emailRegex = /^[^\s@]+@mun\.ca$/i;
         return emailRegex.test(email);
     };
 
@@ -75,9 +84,8 @@ const SignUp = () => {
         setError('');
 
         // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email)) {
-            setError('Please enter a valid email address');
+        if (!validateEmail(formData.email)) {
+            setError('Please enter a valid MUN email address');
             return;
         }
 
@@ -118,27 +126,35 @@ const SignUp = () => {
         setIsLoading(true);
 
         try {
-            // Call the signup function from AuthContext
-            const { status } = await signUp(
-                formData.email,
-                formData.password,
-                `${formData.first_name} ${formData.last_name}`
-            );
-            console.log('Signup status:', status);
+            await signup({
+                firstName: formData.first_name,
+                lastName: formData.last_name,
+                email: formData.email,
+                password: formData.password
+            });
 
-            if (status === 'success') {
-                // Store email in sessionStorage for the email confirmation page
-                sessionStorage.setItem('confirmationEmail', formData.email);
-                router.push('/email-confirmation'); // Redirect to email confirmation page
-            } else {
-                setError(status || 'An error occurred during signup');
-            }
+            await checkAuth();
+            router.push('/'); // Redirect to home page on success
         } catch (err) {
             setError(err.message || 'An error occurred during signup');
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-lg">Loading...</div>
+            </div>
+        );
+    }
+
+    // Don't render the form if user is authenticated
+    if (user) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center flex-col">
