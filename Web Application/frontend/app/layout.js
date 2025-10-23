@@ -1,6 +1,7 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { SearchProvider } from "@/context/SearchContext";
 
 export const metadata = {
   title: "Student Trade Hub",
@@ -14,7 +15,10 @@ export default function RootLayout({ children }) {
         className="bg-gradient-to-t from-slate-900 to-slate-700 text-gray-100 min-h-screen font-sans"
       >
         <AuthProvider>
-          {children}
+          <SearchProvider>
+            <Navbar />
+            {children}
+          </SearchProvider>
         </AuthProvider>
       </body>
     </html>
