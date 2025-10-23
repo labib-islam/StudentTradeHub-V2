@@ -34,7 +34,7 @@ export default function ProductManagementCard({ product, onEdit, onDelete }) {
             <div className="relative h-48 bg-slate-200 flex items-center justify-center overflow-hidden">
                 {product.imageUrl && !imageError ? (
                     <img
-                        src={product.imageUrl}
+                        src={`http://localhost:8800/${product.imageUrl}`}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         onError={() => setImageError(true)}

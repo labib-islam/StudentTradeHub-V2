@@ -32,11 +32,15 @@ export const AuthProvider = ({ children }) => {
                     setUser(userData);
                 } else {
                     localStorage.removeItem('token');
+                    setUser(null);
                 }
             } catch (err) {
                 console.error('Auth check failed:', err);
                 localStorage.removeItem('token');
+                setUser(null);
             }
+        } else {
+            setUser(null);
         }
         setLoading(false);
     };

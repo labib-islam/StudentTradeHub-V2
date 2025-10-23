@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match:/^[\w\.-]+@mun\.ca$/
+      match: /^[\w\.-]+@mun\.ca$/
     },
     password: {
       type: String,
@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    productList: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    }],
   },
   {
     timestamps: true,

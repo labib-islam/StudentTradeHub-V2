@@ -5,12 +5,11 @@ import { CgProfile } from "react-icons/cg";
 import { useState, useRef, useEffect } from "react";
 import EditProfile from "./EditProfile";
 import ProtectedRoute from "./ProtectedRoute";
-import { logout } from "@/libs/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useSearch } from "@/context/SearchContext";
 
 export default function Navbar() {
-    const { user } = useAuth();
+    const { user, logout, checkAuth } = useAuth();
     const { searchTerm, setSearchTerm, selectedCategory, setSelectedCategory } = useSearch();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -64,9 +63,17 @@ export default function Navbar() {
     }, []);
 
     const handleSignOut = async () => {
-        logout().then(() => {
+        try {
+            await logout();
+            // Update user state after logout
+            await checkAuth();
+            // Redirect to login page
             router.push('/login');
-        });
+        } catch (error) {
+            console.error('Logout failed:', error);
+            // Still redirect even if logout fails
+            router.push('/login');
+        }
     }
 
     const handleProfileUpdated = (updatedProfile) => {

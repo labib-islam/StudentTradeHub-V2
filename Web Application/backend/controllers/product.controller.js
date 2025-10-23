@@ -149,6 +149,7 @@ const deleteProduct = async (req, res) => {
 
     // Only creator can delete
     const isCreator = product.createdBy._id.toString() === req.userData.userId;
+    console.log("Is Creator:", isCreator);
 
     if (!isCreator) {
       return res

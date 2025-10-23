@@ -12,10 +12,10 @@ const checkAuth = (allowedRole = "any") => {
       const token = authHeader.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Role-based authorization
-      if (allowedRole !== "any" && decodedToken.role !== allowedRole) {
-        return res.status(403).json({ message: "Authorization failed" });
-      }
+      //Role - based authorization
+      // if (allowedRole !== "any" && decodedToken.role !== allowedRole) {
+      //   return res.status(403).json({ message: "Authorization failed" });
+      // }
 
       req.userData = {
         userId: decodedToken.userId,
