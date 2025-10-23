@@ -2,13 +2,16 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 import authRoutes from "./routes/auth.routes.js";
+import productRoutes from "./routes/products.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 // Load environment variables
-dotenv.config()
+dotenv.config();
 
 // Server Setup
-const app = express()
+const app = express();
 const port = process.env.PORT || 8800;
 
 // Allow requests from frontend
@@ -19,10 +22,11 @@ app.use(
   })
 );
 
-
 // Connect to Database [MongoDB]
 mongoose
-  .connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.we8cyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
+  .connect(
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.we8cyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+  )
   .then(() => {
     app.listen(port);
     console.log("Connected to Database");
@@ -31,13 +35,16 @@ mongoose
     console.log(err);
   });
 
-
 // Middleware: To parse incoming JSON request
 app.use(express.json());
+// Middleware: To serve static files
+app.use("/public/images", express.static(path.join("public", "images")));
 
 // Routes
 app.get("/", (req, res) => res.send("Student-Tradehub"));
-app.use('/api/auth', authRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 
 // handle undefined paths (404 Not Found)
 app.use((req, res, next) => {
