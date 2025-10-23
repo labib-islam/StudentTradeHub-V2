@@ -1,32 +1,26 @@
 "use client";
-import { logout } from "@/libs/auth";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-const handleLogout = async () => {
-  logout();
-  window.location.href = '/login';
-}
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const router = useRouter();
+  const { user, loading } = useAuth();
 
+  useEffect(() => {
+    if (!loading) {
+      router.push('/buy');
+    }
+  }, [loading, router]);
+
+  // Show loading state while redirecting
   return (
     <ProtectedRoute>
-      <div className="min-h-screen p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
-            >
-              Logout
-            </button>
-          </div>
-          <p>Welcome: {user?.email}</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Redirecting...</div>
       </div>
     </ProtectedRoute>
   );
 }
-
