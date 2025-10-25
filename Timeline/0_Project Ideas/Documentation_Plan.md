@@ -234,3 +234,22 @@ Next Steps
 •	Begin implementing assigned tasks and submit pull requests for review.
 •	Schedule the next meeting to evaluate progress and resolve any setup challenges.
 
+10/18
+RECAP OF TODAY'S MEETING
+
+Discussion Summary
+Today’s meeting focused on kicking off Milestone 2, which focuses on building the main parts of the project that let users list, manage, and view products. We talked about who is handling each task, how the backend and frontend connect, and what progress has been made since the last sprint.
+
+The team confirmed that the backend and frontend are now connected properly. Product routes have been set up, and work has started on the main pages and forms for showing and managing products and user profiles.
+
+Planned Tasks
+• Backend: Implement the Product Schema to define the data structure for listings.
+• Backend: Develop full CRUD operations (Create, Read, Update, Delete) for product management.
+• Frontend: Build product listing pages, along with add/edit product forms and reusable UI components.
+• Backend: Add profile management features, including view, edit, and password change functionalities.
+• Frontend: Develop a user dashboard to display user details, along with profile editing forms and related UI components.
+• Frontend: Create the navigation bar, configure routes, and establish navigation between pages.
+• Frontend: Implement a search feature to allow users to find products quickly and efficiently.
+
+Next Steps
+The team agreed to complete the current tasks before the project progress day so we can present a demo version of the system and be on track.
