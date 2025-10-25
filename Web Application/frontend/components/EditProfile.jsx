@@ -204,8 +204,8 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
             console.log('Updating user with ID:', userId);
 
             const updatePayload = {
-                first_name: profileData.first_name.trim(),
-                last_name: profileData.last_name.trim()
+                firstName: profileData.first_name.trim(),
+                lastName: profileData.last_name.trim()
             };
 
             // Add password to payload if changing password
@@ -255,6 +255,7 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
             setError(error.message || 'Failed to update profile. Please try again.');
         } finally {
             setLoading(false);
+            window.location.reload();
         }
     };
 
