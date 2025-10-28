@@ -253,3 +253,53 @@ Planned Tasks
 
 Next Steps
 The team agreed to complete the current tasks before the project progress day so we can present a demo version of the system and be on track.
+
+10/28 
+RECAP OF TODAY'S MEETING
+
+Discussion Summary
+1. Story Points and Task Allocation
+
+The team discussed assigning story points to milestone 3 tasks for better workload estimation and sprint tracking.
+
+Members were reminded that whoever implements a task is also responsible for creating its corresponding test functionality.
+
+2. API Integration and Application Structure
+
+The primary development focus was on the app.js file, which serves as the central point for integrating controllers, routes, and middleware.
+
+The team tested API routes using Insomnia to ensure endpoints function as expected.
+
+Members practiced calling methods through API routes to confirm backend logic and data flow.
+
+3. Payment Method Feature
+
+Began implementing the Add Payment Method/Details functionality.
+
+Discussed the need for authentication middleware to secure payment-related routes — ensuring only logged-in users can add or modify payment details.
+
+Initially encountered authentication failure due to no active user login; resolved by creating a demo user profile to generate a valid token.
+
+Identified and corrected a data structure issue — payment methods were being stored as an array of null values (null-0, payment method-1).
+
+Fixed by updating the implementation to push only one valid payment object at a time.
+
+Considered future flexibility for supporting multiple payment methods per user.
+
+4. Testing and Debugging
+
+Verified backend functionality through manual API calls in Insomnia.
+
+Team agreed that each developer should include basic test cases for their implemented features.
+
+Action Item: Research how to incorporate automated testing (e.g., Jest or Mocha) for future iterations to improve reliability and reduce manual testing workload.
+
+Next Steps
+
+Finalize and test the Add Payment Method feature.
+
+Set up automated testing tools for backend validation.
+
+Update documentation to reflect recent progress and testing procedures.
+
+Continue story point allocation and ensure all new issues include testing tasks.
