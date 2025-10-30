@@ -60,7 +60,7 @@ const getAllProducts = async (req, res) => {
 
     const products = await Product.find(filter).populate(
       "createdBy",
-      "email imageUrl"
+      "firstName lastName email imageUrl"
     );
 
     return res.json({ products });

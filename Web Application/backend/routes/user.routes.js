@@ -16,9 +16,11 @@ router.delete("/:id", checkAuth(), userController.deleteUser);
 // Product management routes
 router.post("/:id/products", checkAuth(), userController.addProductToUser);
 router.delete(
-    "/:id/products/:productId",
-    checkAuth(),
-    userController.removeProductFromUser
+  "/:id/products/:productId",
+  checkAuth(),
+  userController.removeProductFromUser
 );
+
+router.post("/payment/add", checkAuth("user"), userController.addPaymentMethod);
 
 export default router;
