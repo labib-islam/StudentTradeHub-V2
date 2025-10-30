@@ -6,7 +6,21 @@ This project consists of two main parts:
 - **Frontend** – built with NextJS.
 
 ---
+## 📋 Prerequisites
+Before running this project, ensure you have **Node.js** (v16 or higher) installed on your system
 
+---
+## 📥 Clone the Repository
+### **1. Clone the project from GitHub**
+```bash
+https://github.com/tomisiiiin/StudentTradeHub.git
+```
+### **2. Navigate to the project directory**
+```bash
+cd "Web Application"
+```
+
+---
 ## 🗂 Folder Structure
 ```
 Web Application/
@@ -17,15 +31,10 @@ Web Application/
 ```
 
 ---
-## 📋 Prerequisites
-Before running this project, ensure you have **Node.js** (v16 or higher) installed on your system
-
----
 ## 🚀 Backend Setup
 
 ### **1. Navigate to the backend folder**
 ```bash
-cd "Web Application"
 cd backend
 ```
 
@@ -65,7 +74,6 @@ http://localhost:8800/
 
 ### **1. Navigate to the frontend folder**
 ```bash
-cd "Web Application"
 cd frontend
 ```
 
@@ -90,3 +98,4 @@ npm run dev
 ```
 http://localhost:3000/
 ```
+
