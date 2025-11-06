@@ -6,7 +6,7 @@ import User from "../models/user.model.js";
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, quantity, status } = req.body;
+    const { name, description, price, category, quantity, status, condition } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ message: "Product image is required" });
@@ -21,6 +21,7 @@ const createProduct = async (req, res) => {
       quantity,
       imageUrl: req.file.path,
       status,
+      condition,
       createdBy: req.userData.userId,
     });
 
@@ -103,7 +104,7 @@ const getProductById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, price, category, quantity } = req.body;
+    const { name, description, price, category, quantity, status, condition } = req.body;
     const pid = req.params.pid;
 
     const product = await Product.findById(pid);
@@ -127,6 +128,8 @@ const updateProduct = async (req, res) => {
     if (price) product.price = price;
     if (category) product.category = category;
     if (quantity) product.quantity = quantity;
+    if (status) product.status = status;
+    if (condition) product.condition = condition;
 
     await product.save();
 

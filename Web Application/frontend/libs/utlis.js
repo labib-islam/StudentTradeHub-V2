@@ -137,6 +137,7 @@ export const createProduct = async (formData) => {
         submitData.append("category", formData.category);
         submitData.append("quantity", formData.quantity);
         submitData.append("status", formData.status);
+        submitData.append("condition", formData.condition);
         submitData.append("image", formData.image);
 
         const response = await fetch(`${API_URL}/api/products/new`, {
@@ -174,6 +175,7 @@ export const updateProduct = async (productId, formData) => {
             category: formData.category,
             quantity: formData.quantity,
             status: formData.status,
+            condition: formData.condition,
         };
 
         const response = await fetch(`${API_URL}/api/products/${productId}`, {

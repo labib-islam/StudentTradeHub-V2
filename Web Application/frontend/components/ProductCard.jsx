@@ -36,10 +36,22 @@ export default function ProductCard({ product }) {
 
       {/* Product Details */}
       <div className="p-4 flex flex-col flex-grow">
-        {/* Category */}
-        <span className="text-slate-600 text-xs font-medium uppercase tracking-wide mb-1">
-          {product.category}
-        </span>
+        {/* Category and Condition */}
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-slate-600 text-xs font-medium uppercase tracking-wide">
+            {product.category}
+          </span>
+          {product.condition && (
+            <span className={`text-xs font-semibold px-2 py-1 rounded ${product.condition === "Brand New" ? "bg-blue-100 text-blue-800" :
+                product.condition === "Like New" ? "bg-green-100 text-green-800" :
+                  product.condition === "Good" ? "bg-yellow-100 text-yellow-800" :
+                    product.condition === "Used" ? "bg-gray-100 text-gray-800" :
+                      "bg-red-100 text-red-800"
+              }`}>
+              {product.condition}
+            </span>
+          )}
+        </div>
 
         {/* Product Name */}
         <h3 className="text-black font-semibold text-lg mb-2 line-clamp-2">
@@ -71,11 +83,10 @@ export default function ProductCard({ product }) {
 
         {/* Action Button */}
         <button
-          className={`w-full py-2 px-4 rounded-md font-medium transition-colors duration-200 ${
-            product.quantity > 0
+          className={`w-full py-2 px-4 rounded-md font-medium transition-colors duration-200 ${product.quantity > 0
               ? "bg-slate-800 hover:bg-slate-900 text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
+            }`}
           disabled={product.quantity === 0}
         >
           {product.quantity > 0 ? "Contact Seller" : "Out of Stock"}

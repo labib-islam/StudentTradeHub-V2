@@ -41,6 +41,12 @@ const productSchema = new mongoose.Schema(
       enum: ["active", "inactive", "draft"],
       trim: true,
     },
+    condition: {
+      type: String,
+      required: true,
+      enum: ["Brand New", "Like New", "Good", "Used", "Damaged"],
+      trim: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
