@@ -16,6 +16,7 @@ export default function ProductForm({
         category: initialData?.category || "",
         quantity: initialData?.quantity || "",
         status: initialData?.status || "active",
+        condition: initialData?.condition || "Good",
         image: null,
     });
     const [imagePreview, setImagePreview] = useState(initialData?.imageUrl || null);
@@ -30,6 +31,14 @@ export default function ProductForm({
         "Tools",
         "Home & Kitchen",
         "Other",
+    ];
+
+    const conditions = [
+        "Brand New",
+        "Like New",
+        "Good",
+        "Used",
+        "Damaged",
     ];
 
     const handleChange = (e) => {
@@ -74,6 +83,7 @@ export default function ProductForm({
     const handleSubmit = (e) => {
         e.preventDefault();
         setError(null);
+        console.log("Submitting form data:", formData);
 
         // Validation
         if (!formData.name || !formData.price || !formData.category || !formData.quantity) {
@@ -187,8 +197,8 @@ export default function ProductForm({
                 </div>
             </div>
 
-            {/* Category and Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Category, Condition, and Status */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {/* Category */}
                 <div>
                     <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
@@ -207,6 +217,28 @@ export default function ProductForm({
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>
                                 {cat}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Condition */}
+                <div>
+                    <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-2">
+                        Condition <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                        id="condition"
+                        name="condition"
+                        value={formData.condition}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border border-slate-400 rounded-md text-black focus:outline-none focus:border-slate-600"
+                        required
+                        disabled={loading}
+                    >
+                        {conditions.map((cond) => (
+                            <option key={cond} value={cond}>
+                                {cond}
                             </option>
                         ))}
                     </select>

@@ -23,9 +23,8 @@ export default function ProductManagementCard({ product, onEdit, onDelete }) {
 
     return (
       <span
-        className={`${
-          statusColors[product.status]
-        } text-white text-xs font-semibold px-2 py-1 rounded uppercase`}
+        className={`${statusColors[product.status]
+          } text-white text-xs font-semibold px-2 py-1 rounded uppercase`}
       >
         {product.status}
       </span>
@@ -54,10 +53,22 @@ export default function ProductManagementCard({ product, onEdit, onDelete }) {
 
       {/* Product Details */}
       <div className="p-4">
-        {/* Category */}
-        <span className="text-slate-600 text-xs font-medium uppercase tracking-wide">
-          {product.category}
-        </span>
+        {/* Category and Condition */}
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-slate-600 text-xs font-medium uppercase tracking-wide">
+            {product.category}
+          </span>
+          {product.condition && (
+            <span className={`text-xs font-semibold px-2 py-1 rounded ${product.condition === "Brand New" ? "bg-blue-100 text-blue-800" :
+                product.condition === "Like New" ? "bg-green-100 text-green-800" :
+                  product.condition === "Good" ? "bg-yellow-100 text-yellow-800" :
+                    product.condition === "Used" ? "bg-gray-100 text-gray-800" :
+                      "bg-red-100 text-red-800"
+              }`}>
+              {product.condition}
+            </span>
+          )}
+        </div>
 
         {/* Product Name */}
         <h3 className="text-black font-semibold text-lg mb-2 line-clamp-1">
