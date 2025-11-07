@@ -4,6 +4,11 @@ import mongoose from "mongoose";
 import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 
+const toNum = (v) => (v === undefined ? undefined : Number(v));
+const toBool = (v) =>
+  v === undefined ? undefined : ["true", "1", "yes"].includes(String(v).toLowerCase());
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, quantity, status, condition } = req.body;
@@ -25,6 +30,7 @@ const createProduct = async (req, res) => {
       createdBy: req.userData.userId,
     });
 
+
     // Associate product with user
     const user = await User.findById(req.userData.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -44,32 +50,100 @@ const createProduct = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const search = req.query.search;
-  const category = req.query.cat;
-  const status = req.query.status;
+  const {
+    search,
+    status,
+    condition,
+    minPrice,
+    maxPrice,
+    createdBy,
+    inStock,
+    sort,
+    page = 1,
+    limit = 12,
+  } = req.query;
+
+  const categoryParam = (req.query.category || req.query.cat || "").trim();
 
   try {
-    const filter = {
-      ...(status && status !== "all" && { status }), // filter by status if applicable
-      ...(category && category !== "all" && { category }), // filter by category
-      ...(search && { name: { $regex: search, $options: "i" } }), // case-insensitive search in product name
-    };
+    const filter = {};
 
     if (status === "all") {
-      filter.status = { $ne: "draft" }; // exclude "draft"
+      filter.status = { $ne: "draft" };
+    } else if (status) {
+      filter.status = status;
     }
 
-    const products = await Product.find(filter).populate(
-      "createdBy",
-      "firstName lastName email imageUrl"
-    );
 
-    return res.json({ products });
+    if (categoryParam && categoryParam !== "all") {
+      filter.category = { $regex: new RegExp(`^${escapeRegex(categoryParam)}$`, "i") };
+    }
+
+    if (condition && condition !== "all") {
+      filter.condition = condition;
+    }
+
+    const minP = toNum(minPrice);
+    const maxP = toNum(maxPrice);
+    if (minP !== undefined || maxP !== undefined) {
+      filter.price = {};
+      if (!Number.isNaN(minP)) filter.price.$gte = minP;
+      if (!Number.isNaN(maxP)) filter.price.$lte = maxP;
+    }
+
+    if (createdBy) filter.createdBy = createdBy;
+
+    const inStockBool = toBool(inStock);
+    if (inStockBool !== undefined) {
+      filter.quantity = inStockBool ? { $gt: 0 } : { $lte: 0 };
+    }
+
+    if (search) {
+      filter.name = { $regex: escapeRegex(search), $options: "i" };
+    }
+
+    const sortRaw = String(sort || "newest").trim();
+    let sortOption;
+    switch (sortRaw) {
+      case "price":   sortOption = { price: 1 }; break;
+      case "-price":  sortOption = { price: -1 }; break;
+      case "name":    sortOption = { name: 1 }; break;
+      case "-name":   sortOption = { name: -1 }; break;
+      case "newest":
+      default:        sortOption = { createdAt: -1 };
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .collation({ locale: "en", numericOrdering: true })
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limitNum)
+        .populate("createdBy", "firstName lastName email imageUrl")
+        .lean(),
+      Product.countDocuments(filter),
+    ]);
+
+    return res.json({
+      products,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum),
+        hasNext: skip + products.length < total,
+      },
+    });
   } catch (err) {
     console.error("Error fetching products:", err);
     res.status(500).send();
   }
 };
+
 
 const getProductById = async (req, res) => {
   const pid = req.params.pid;
@@ -104,7 +178,7 @@ const getProductById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, price, category, quantity, status, condition } = req.body;
+    const { name, description, price, category, quantity } = req.body;
     const pid = req.params.pid;
 
     const product = await Product.findById(pid);
@@ -128,8 +202,7 @@ const updateProduct = async (req, res) => {
     if (price) product.price = price;
     if (category) product.category = category;
     if (quantity) product.quantity = quantity;
-    if (status) product.status = status;
-    if (condition) product.condition = condition;
+    if (req.body.condition) product.condition = req.body.condition; 
 
     await product.save();
 
@@ -188,10 +261,31 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+/** GET /api/products/suggest?q=xxx */
+const suggestProducts = async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.json([]);
+
+    const suggestions = await Product.find(
+      { name: { $regex: `^${escapeRegex(q)}`, $options: "i" } },
+      { _id: 1, name: 1 }
+    )
+      .limit(10)
+      .lean();
+
+    res.json(suggestions);
+  } catch (err) {
+    console.error("Error suggesting products:", err);
+    res.status(500).send();
+  }
+};
+
 export default {
   createProduct,
   getAllProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  suggestProducts,
 };

@@ -7,6 +7,7 @@ import checkAuth from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.get("/", productController.getAllProducts);
+router.get("/suggest", productController.suggestProducts);
 router.get("/:pid", checkAuth(), productController.getProductById);
 router.post(
   "/new",
