@@ -6,6 +6,7 @@ const SearchContext = createContext();
 export function SearchProvider({ children }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("all");
+    const [selectedCondition, setSelectedCondition] = useState("all");
 
     return (
         <SearchContext.Provider
@@ -14,6 +15,8 @@ export function SearchProvider({ children }) {
                 setSearchTerm,
                 selectedCategory,
                 setSelectedCategory,
+                selectedCondition,
+                setSelectedCondition,
             }}
         >
             {children}

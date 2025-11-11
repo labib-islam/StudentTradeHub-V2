@@ -8,14 +8,37 @@ export default function BuyPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { searchTerm, setSearchTerm, selectedCategory, setSelectedCategory } = useSearch();
+    const { searchTerm, selectedCategory, selectedCategories, selectedCondition } = useSearch();
 
-    // Fetch products
+    // Fetch products from backend with filters
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("http://localhost:8800/api/products/");
+
+                // Build query parameters
+                const params = new URLSearchParams();
+
+                if (searchTerm) {
+                    params.append('search', searchTerm);
+                }
+
+                // Use multi-select categories if available, otherwise fall back to single category
+                if (selectedCategories && selectedCategories.length > 0) {
+                    selectedCategories.forEach(cat => params.append('category', cat));
+                } else if (selectedCategory && selectedCategory !== 'all') {
+                    params.append('category', selectedCategory);
+                }
+
+                // Add condition filters
+                if (selectedCondition && selectedCondition !== 'all') {
+                    params.append('condition', selectedCondition);
+                }
+
+                // Only show active products
+                params.append('status', 'active');
+
+                const response = await fetch(`http://localhost:8800/api/products/?${params.toString()}`);
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch products");
@@ -36,19 +59,7 @@ export default function BuyPage() {
         };
 
         fetchProducts();
-    }, []);
-
-    // Filter products based on search and category
-    const filteredProducts = Array.isArray(products) ? products.filter((product) => {
-        const matchesSearch =
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesCategory =
-            selectedCategory === "all" || product.category === selectedCategory;
-
-        return matchesSearch && matchesCategory && product.status === "active";
-    }) : [];
+    }, [searchTerm, selectedCategory, selectedCategories, selectedCondition]);
 
     return (
         <ProtectedRoute>
@@ -64,8 +75,8 @@ export default function BuyPage() {
                         </p>
                         {/* Results Count */}
                         <div className="mt-4 text-gray-600 text-sm">
-                            Showing {filteredProducts.length} product
-                            {filteredProducts.length !== 1 ? "s" : ""}
+                            Showing {products.length} product
+                            {products.length !== 1 ? "s" : ""}
                         </div>
                     </div>
 
@@ -87,9 +98,9 @@ export default function BuyPage() {
                     {/* Products Grid */}
                     {!loading && !error && (
                         <>
-                            {filteredProducts.length > 0 ? (
+                            {products.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {filteredProducts.map((product) => (
+                                    {products.map((product) => (
                                         <ProductCard key={product._id} product={product} />
                                     ))}
                                 </div>
@@ -98,15 +109,6 @@ export default function BuyPage() {
                                     <p className="text-gray-600 text-lg">
                                         No products found matching your criteria.
                                     </p>
-                                    <button
-                                        onClick={() => {
-                                            setSearchTerm("");
-                                            setSelectedCategory("all");
-                                        }}
-                                        className="mt-4 px-6 py-2 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-md transition-colors duration-200"
-                                    >
-                                        Clear Filters
-                                    </button>
                                 </div>
                             )}
                         </>
