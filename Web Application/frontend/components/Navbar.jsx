@@ -9,7 +9,7 @@ import { useSearch } from "@/context/SearchContext";
 
 export default function Navbar() {
     const { user, logout, checkAuth } = useAuth();
-    const { searchTerm, setSearchTerm, selectedCategory, setSelectedCategory } = useSearch();
+    const { searchTerm, setSearchTerm, selectedCategory, setSelectedCategory, selectedCondition, setSelectedCondition } = useSearch();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [userData, setUserData] = useState(null);
@@ -18,6 +18,63 @@ export default function Navbar() {
     const [categories, setCategories] = useState([]);
     const dropdownRef = useRef(null);
     const router = useRouter();
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    // 新增：两个弹层开关
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+    const [isConditionOpen, setIsConditionOpen] = useState(false);
+    // ↓↓↓ 新增：这两个 ref 用来“只在点击菜单外部时才关闭” ↓↓↓
+
+
+    // 新增：多选结果
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedConditions, setSelectedConditions] = useState([]);
+    // ↓↓↓ 新增：这两个 ref 用来“只在点击菜单外部时才关闭” ↓↓↓
+    const categoryRef = useRef(null);
+    const conditionRef = useRef(null);
+
+
+    // 勾选/反选
+    const handleCategoryToggle = (category) => {
+        setSelectedCategories((prev) =>
+            prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
+        );
+    };
+
+
+
+    const handleConditionToggle = (condition) => {
+        setSelectedConditions((prev) =>
+            prev.includes(condition) ? prev.filter((c) => c !== condition) : [...prev, condition]
+        );
+    };
+
+    // Apply category filters
+    const applyCategoryFilters = () => {
+        const categoryString = selectedCategories.length > 0 ? selectedCategories.join(',') : 'all';
+        setSelectedCategory(categoryString);
+        setIsCategoryOpen(false);
+    };
+
+    // Apply condition filters
+    const applyConditionFilters = () => {
+        const conditionString = selectedConditions.length > 0 ? selectedConditions.join(',') : 'all';
+        setSelectedCondition(conditionString);
+        console.log("Applied Conditions:", conditionString);
+        setIsConditionOpen(false);
+    };
+
+    // Clear category filters
+    const clearCategoryFilters = () => {
+        setSelectedCategories([]);
+        setSelectedCategory('all');
+    };
+
+    // Clear condition filters
+    const clearConditionFilters = () => {
+        setSelectedConditions([]);
+        setSelectedCondition('all');
+    };
+
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -38,27 +95,6 @@ export default function Navbar() {
         };
 
         fetchUserProfile();
-    }, []);
-
-    // Fetch categories from products
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await fetch("http://localhost:8800/api/products/");
-                if (response.ok) {
-                    const data = await response.json();
-                    const productsArray = Array.isArray(data) ? data : [];
-                    const uniqueCategories = [
-                        ...new Set(productsArray.map((product) => product.category)),
-                    ];
-                    setCategories(uniqueCategories);
-                }
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            }
-        };
-
-        fetchCategories();
     }, []);
 
     const handleSignOut = async () => {
@@ -89,10 +125,20 @@ export default function Navbar() {
     };
 
     // Close dropdown when clicking outside
+
     useEffect(() => {
         const handleClickOutside = (event) => {
+            // 头像下拉
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
+            }
+            // Categories 菜单：只有点在菜单外才关
+            if (categoryRef.current && !categoryRef.current.contains(event.target)) {
+                setIsCategoryOpen(false);
+            }
+            // Condition 菜单：只有点在菜单外才关
+            if (conditionRef.current && !conditionRef.current.contains(event.target)) {
+                setIsConditionOpen(false);
             }
         };
 
@@ -101,6 +147,7 @@ export default function Navbar() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
 
     // Don't show navbar on login/signup pages when user is not logged in
     if (!user) {
@@ -126,25 +173,6 @@ export default function Navbar() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    {/* Category Dropdown */}
-                    <div className="relative">
-                        <MdFilterList
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                            size={20}
-                        />
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="pl-10 pr-4 py-2 bg-white border border-slate-500 rounded-full text-black focus:outline-none cursor-pointer appearance-none min-w-[180px]"
-                        >
-                            <option value="all">All Categories</option>
-                            {categories.map((category) => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
                 </div>
                 <div className="relative" ref={dropdownRef}>
                     <button
@@ -193,12 +221,6 @@ export default function Navbar() {
             </div>
             {/* Navigation Links */}
             <div className="flex justify-center items-center grid-cols-3 gap-24 mx-8">
-                {/* <a
-                        href="/"
-                        className="hover:bg-slate-600 hover:text-white py-1 px-3 text-lg transition-colors duration-200"
-                    >
-                        Home
-                    </a> */}
                 <a
                     href="/buy"
                     className="hover:bg-slate-600 hover:text-white py-1 px-3 text-lg transition-colors duration-200"
@@ -211,6 +233,113 @@ export default function Navbar() {
                 >
                     Sell
                 </a>
+            </div>
+            {/* Navigation Links + Filters */}
+            <div className="flex justify-between items-center mx-8">
+                {/* 左侧：Categories + Condition */}
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <MdFilterList
+                            className=""
+                            size={20}
+                        />
+                        Filters
+                    </div>
+                    {/* Categories 多选下拉（加 ref） */}
+                    <div className="relative" ref={categoryRef}>
+                        <button
+                            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                            className="px-4 py-2 bg-white border border-slate-500 rounded-full text-black hover:bg-slate-100 focus:outline-none"
+                        >
+                            Categories
+                        </button>
+
+                        {isCategoryOpen && (
+                            <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-300 rounded-lg shadow-lg z-50 p-4">
+                                <h3 className="font-semibold mb-2 text-gray-700">Select Categories</h3>
+
+                                {[
+                                    "Electronics",
+                                    "Books",
+                                    "Furniture",
+                                    "Clothing",
+                                    "Sports & Outdoors",
+                                    "Tools",
+                                    "Home & Kitchen",
+                                    "Other",
+                                ].map((cat) => (
+                                    <label key={cat} className="flex items-center mb-2 text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedCategories.includes(cat)}
+                                            onChange={() => handleCategoryToggle(cat)}
+                                            className="mr-2 accent-slate-700"
+                                        />
+                                        {cat}
+                                    </label>
+                                ))}
+
+                                <div className="flex justify-between mt-3">
+                                    <button
+                                        onClick={clearCategoryFilters}
+                                        className="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100"
+                                    >
+                                        Clear
+                                    </button>
+                                    <button
+                                        onClick={applyCategoryFilters}
+                                        className="px-3 py-1 bg-slate-800 text-white rounded-md text-sm hover:bg-slate-900"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Condition 多选下拉（加 ref） */}
+                    <div className="relative" ref={conditionRef}>
+                        <button
+                            onClick={() => setIsConditionOpen(!isConditionOpen)}
+                            className="px-4 py-2 bg-white border border-slate-500 rounded-full text-black hover:bg-slate-100 focus:outline-none"
+                        >
+                            Condition
+                        </button>
+
+                        {isConditionOpen && (
+                            <div className="absolute left-0 mt-2 w-64 bg-white border border-slate-300 rounded-lg shadow-lg z-50 p-4">
+                                <h3 className="font-semibold mb-2 text-gray-700">Select Condition</h3>
+
+                                {["Brand New", "Like New", "Good", "Used", "Damaged"].map((cond) => (
+                                    <label key={cond} className="flex items-center mb-2 text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedConditions.includes(cond)}
+                                            onChange={() => handleConditionToggle(cond)}
+                                            className="mr-2 accent-slate-700"
+                                        />
+                                        {cond}
+                                    </label>
+                                ))}
+
+                                <div className="flex justify-between mt-3">
+                                    <button
+                                        onClick={clearConditionFilters}
+                                        className="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100"
+                                    >
+                                        Clear
+                                    </button>
+                                    <button
+                                        onClick={applyConditionFilters}
+                                        className="px-3 py-1 bg-slate-800 text-white rounded-md text-sm hover:bg-slate-900"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* Edit Profile Modal */}
