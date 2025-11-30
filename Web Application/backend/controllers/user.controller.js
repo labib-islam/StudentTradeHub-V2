@@ -1,6 +1,19 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
+const buildSafePaymentSnapshot = (payment) => {
+  if (!payment) return null;
+  const { cardHolderName, cardNumber, expiryDate, type } = payment;
+  if (!cardHolderName || !cardNumber || !expiryDate || !type) return null;
+
+  return {
+    cardHolderName,
+    last4: cardNumber.slice(-4),
+    expiryDate,
+    type,
+  };
+};
+
 // Get all users
 const getAllUsers = async (req, res) => {
   try {
@@ -243,17 +256,85 @@ const addPaymentMethod = async (req, res) => {
   try {
     const user = await User.findById(req.userData.userId);
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
     user.paymentMethod = req.body;
+    const snapshot = buildSafePaymentSnapshot(req.body);
+    if (snapshot) {
+      user.defaultPaymentMethod = snapshot;
+    }
     await user.save();
 
     res.status(201).json({
       message: "Payment method added",
-      data: user.paymentMethod,
+      data: user.defaultPaymentMethod,
     });
   } catch (err) {
+    console.error("Failed to add payment method", err.message);
     res
       .status(500)
       .json({ message: "Failed to add payment method", error: err.message });
+  }
+};
+
+const getUserPreferences = async (req, res) => {
+  try {
+    const user = await User.findById(req.userData.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      paymentMethod: user.defaultPaymentMethod || null,
+      deliveryAddress: user.defaultDeliveryAddress || null,
+      pickupAddress: user.pickupAddress || null,
+    });
+  } catch (err) {
+    console.error("Failed to fetch preferences:", err.message);
+    res.status(500).json({ message: "Failed to fetch preferences." });
+  }
+};
+
+const updateUserPreferences = async (req, res) => {
+  try {
+    const user = await User.findById(req.userData.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const { paymentMethod, deliveryAddress, pickupAddress } = req.body;
+
+    if (paymentMethod) {
+      const snapshot = buildSafePaymentSnapshot(paymentMethod);
+      if (!snapshot) {
+        return res.status(400).json({ message: "Invalid payment method data." });
+      }
+      user.defaultPaymentMethod = snapshot;
+    }
+
+    if (deliveryAddress) {
+      user.defaultDeliveryAddress = deliveryAddress;
+    }
+
+    if (pickupAddress) {
+      user.pickupAddress = pickupAddress;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Preferences updated successfully.",
+      preferences: {
+        paymentMethod: user.defaultPaymentMethod || null,
+        deliveryAddress: user.defaultDeliveryAddress || null,
+        pickupAddress: user.pickupAddress || null,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to update preferences:", err.message);
+    res.status(500).json({ message: "Failed to update preferences." });
   }
 };
 
@@ -266,4 +347,6 @@ export default {
   addProductToUser,
   removeProductFromUser,
   addPaymentMethod,
+  getUserPreferences,
+  updateUserPreferences,
 };
