@@ -157,169 +157,188 @@ const SignUp = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center flex-col">
-            <h1 className="text-4xl mb-8 text-green-100 font-extralight">StudentTradeHub</h1>
-            <div className="bg-gray-50 p-8 rounded-lg shadow-md w-full max-w-md">
-                <form onSubmit={handleSubmit}>
-                    <h2 className="text-2xl mb-6 text-center text-blue-900">Sign Up</h2>
-                    {error && (
-                        <div className="mb-4 p-2 bg-red-100 text-red-700 text-sm rounded-md">
-                            {error}
-                        </div>
-                    )}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="mb-4">
-                            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                                First Name
-                            </label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="first_name"
-                                value={formData.first_name}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required
-                                disabled={isLoading}
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                                Last Name
-                            </label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="last_name"
-                                value={formData.last_name}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required
-                                disabled={isLoading}
-                            />
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={`mt-1 block w-full px-3 py-2 border ${formData.email && !validateEmail(formData.email)
-                                ? 'border-red-500'
-                                : 'border-gray-300'
-                                } rounded-md shadow-sm text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
-                            required
-                            disabled={isLoading}
-                        />
-                        {formData.email && !validateEmail(formData.email) && (
-                            <p className="mt-1 text-xs text-red-600">Please enter a valid email address</p>
-                        )}
-                    </div>
-                    <div className="mb-6">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required
-                                disabled={isLoading}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-blue-900"
-                            >
-                                {showPassword ? <PiEyeLight size={20} /> : <PiEyeSlash size={20} />}
-                            </button>
-                        </div>
-                        {formData.password && (
-                            <div className="mt-2">
-                                <div className="flex items-center mb-1">
-                                    <span className="text-xs mr-2 text-black">Password strength:</span>
-                                    <span
-                                        className={`text-xs font-medium`}
-                                        style={{ color: getPasswordStrengthLabel().color }}
-                                    >
-                                        {getPasswordStrengthLabel().label}
-                                    </span>
-                                </div>
-                                <div className="bg-gray-200 h-1 w-full rounded">
-                                    <div
-                                        className="h-1 rounded"
-                                        style={{
-                                            width: `${(passwordStrength.score / 5) * 100}%`,
-                                            backgroundColor: getPasswordStrengthLabel().color
-                                        }}
-                                    ></div>
-                                </div>
-                                <ul className="mt-1 text-xs text-gray-600 pl-4 space-y-1">
-                                    <li className={passwordStrength.hasMinLength ? "text-green-600" : ""}>
-                                        At least 6 characters
-                                    </li>
-                                    <li className={passwordStrength.hasUpperCase ? "text-green-600" : ""}>
-                                        Contains uppercase letter
-                                    </li>
-                                    <li className={passwordStrength.hasLowerCase ? "text-green-600" : ""}>
-                                        Contains lowercase letter
-                                    </li>
-                                    <li className={passwordStrength.hasNumber ? "text-green-600" : ""}>
-                                        Contains number
-                                    </li>
-                                    <li className={passwordStrength.hasSpecialChar ? "text-green-600" : ""}>
-                                        Contains special character
-                                    </li>
-                                </ul>
+        <div className="min-h-screen flex items-center justify-center flex-col bg-slate-100 p-4">
+            <div className="w-full max-w-md">
+                <h1 className="text-4xl mb-2 text-center font-semibold text-slate-900">
+                    StudentTradeHub
+                </h1>
+                <p className="text-center text-gray-600 mb-8 text-sm">Create your account to start trading</p>
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
+                    <form onSubmit={handleSubmit}>
+                        <h2 className="text-3xl mb-6 text-center font-bold text-gray-900">Sign Up</h2>
+                        {error && (
+                            <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-lg">
+                                <p className="font-semibold">⚠ Error</p>
+                                <p className="mt-1">{error}</p>
                             </div>
                         )}
-                    </div>
-                    <div className="mb-6">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Confirm Password
-                        </label>
-                        <div className="relative">
+                        <div className="grid grid-cols-2 gap-4 mb-5">
+                            <div>
+                                <label htmlFor="firstName" className="block text-sm font-semibold text-gray-900 mb-2">
+                                    First Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="firstName"
+                                    name="first_name"
+                                    value={formData.first_name}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                    placeholder="John"
+                                    required
+                                    disabled={isLoading}
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="lastName" className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Last Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    name="last_name"
+                                    value={formData.last_name}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                    placeholder="Doe"
+                                    required
+                                    disabled={isLoading}
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-5">
+                            <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-2">
+                                Email
+                            </label>
                             <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                name="confirm_password"
-                                value={formData.confirm_password}
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
                                 onChange={handleChange}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className={`w-full px-4 py-3 border ${formData.email && !validateEmail(formData.email)
+                                    ? 'border-red-500 bg-red-50'
+                                    : 'border-slate-300 bg-white'
+                                    } rounded-lg text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400`}
+                                placeholder="yourname@mun.ca"
                                 required
                                 disabled={isLoading}
                             />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-blue-900"
-                            >
-                                {showPassword ? <PiEyeLight size={20} /> : <PiEyeSlash size={20} />}
-                            </button>
+                            {formData.email && !validateEmail(formData.email) && (
+                                <p className="mt-1 text-xs text-red-600">Please enter a valid @mun.ca email address</p>
+                            )}
                         </div>
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Signing Up...' : 'Sign Up'}
-                    </button>
-                </form>
+                        <div className="mb-5">
+                            <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-2">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg bg-white text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                    placeholder="Create a strong password"
+                                    required
+                                    disabled={isLoading}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700"
+                                >
+                                    {showPassword ? <PiEyeLight size={20} /> : <PiEyeSlash size={20} />}
+                                </button>
+                            </div>
+                            {formData.password && (
+                                <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-medium text-gray-700">Password strength:</span>
+                                        <span
+                                            className={`text-xs font-semibold`}
+                                            style={{ color: getPasswordStrengthLabel().color }}
+                                        >
+                                            {getPasswordStrengthLabel().label}
+                                        </span>
+                                    </div>
+                                    <div className="bg-gray-200 h-2 w-full rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full rounded-full transition-all duration-300"
+                                            style={{
+                                                width: `${(passwordStrength.score / 5) * 100}%`,
+                                                backgroundColor: getPasswordStrengthLabel().color
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <ul className="mt-3 text-xs text-gray-600 space-y-1.5">
+                                        <li className={`flex items-center gap-2 ${passwordStrength.hasMinLength ? "text-green-600" : "text-gray-500"}`}>
+                                            <span>{passwordStrength.hasMinLength ? "✓" : "○"}</span>
+                                            At least 6 characters
+                                        </li>
+                                        <li className={`flex items-center gap-2 ${passwordStrength.hasUpperCase ? "text-green-600" : "text-gray-500"}`}>
+                                            <span>{passwordStrength.hasUpperCase ? "✓" : "○"}</span>
+                                            Contains uppercase letter
+                                        </li>
+                                        <li className={`flex items-center gap-2 ${passwordStrength.hasLowerCase ? "text-green-600" : "text-gray-500"}`}>
+                                            <span>{passwordStrength.hasLowerCase ? "✓" : "○"}</span>
+                                            Contains lowercase letter
+                                        </li>
+                                        <li className={`flex items-center gap-2 ${passwordStrength.hasNumber ? "text-green-600" : "text-gray-500"}`}>
+                                            <span>{passwordStrength.hasNumber ? "✓" : "○"}</span>
+                                            Contains number
+                                        </li>
+                                        <li className={`flex items-center gap-2 ${passwordStrength.hasSpecialChar ? "text-green-600" : "text-gray-500"}`}>
+                                            <span>{passwordStrength.hasSpecialChar ? "✓" : "○"}</span>
+                                            Contains special character
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                        <div className="mb-6">
+                            <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-900 mb-2">
+                                Confirm Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="confirmPassword"
+                                    name="confirm_password"
+                                    value={formData.confirm_password}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg bg-white text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                    placeholder="Confirm your password"
+                                    required
+                                    disabled={isLoading}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700"
+                                >
+                                    {showPassword ? <PiEyeLight size={20} /> : <PiEyeSlash size={20} />}
+                                </button>
+                            </div>
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full bg-slate-900 hover:bg-slate-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Signing Up...' : 'Sign Up'}
+                        </button>
+                    </form>
 
-                <div className="mt-6 text-center">
-                    <a href="/login" className="text-sm text-blue-900 hover:underline hover:text-blue-400">
-                        Already have an account? Log In
-                    </a>
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-gray-600">
+                            Already have an account?{' '}
+                            <a href="/login" className="text-blue-600 hover:text-blue-700 hover:underline font-semibold">
+                                Log In
+                            </a>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
