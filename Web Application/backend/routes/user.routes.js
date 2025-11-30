@@ -22,5 +22,11 @@ router.delete(
 );
 
 router.post("/payment/add", checkAuth("user"), userController.addPaymentMethod);
+router.get("/me/preferences", checkAuth(), userController.getUserPreferences);
+router.patch(
+  "/me/preferences",
+  checkAuth("user"),
+  userController.updateUserPreferences
+);
 
 export default router;

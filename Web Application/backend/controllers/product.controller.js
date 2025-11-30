@@ -3,6 +3,7 @@ import path from "path";
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
+import Order from "../models/order.model.js";
 
 const toNum = (v) => (v === undefined ? undefined : Number(v));
 const toBool = (v) =>
@@ -17,6 +18,16 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Product image is required" });
     }
 
+    // Prevent creating products with inactive status
+    if (status === "inactive") {
+      return res
+        .status(400)
+        .json({ message: "Cannot create a product with inactive status. Use 'active' or 'draft'." });
+    }
+
+    // Only allow "active" or "draft" status, default to "active"
+    const productStatus = status && ["active", "draft"].includes(status) ? status : "active";
+
     // Create new product
     const newProduct = new Product({
       name,
@@ -25,7 +36,7 @@ const createProduct = async (req, res) => {
       category,
       quantity,
       imageUrl: req.file.path,
-      status,
+      status: productStatus,
       condition,
       createdBy: req.userData.userId,
     });
@@ -91,7 +102,12 @@ const getAllProducts = async (req, res) => {
       if (!Number.isNaN(maxP)) filter.price.$lte = maxP;
     }
 
-    if (createdBy) filter.createdBy = createdBy;
+    // if (createdBy) {
+    //   filter.createdBy = createdBy;
+    // } else if (req.userData?.userId) {
+    //   // For authenticated users, hide their own products from the general list
+    //   filter.createdBy = { $ne: req.userData.userId };
+    // }
 
     const inStockBool = toBool(inStock);
     if (inStockBool !== undefined) {
@@ -151,20 +167,36 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(pid).populate(
       "createdBy",
-      "email imageUrl"
+      "firstName lastName email imageUrl pickupAddress defaultDeliveryAddress"
     );
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const isActive = product.status === "active"; // if you have status
-    const notDraft = product.status !== "draft"; // if you have draft logic
-    const isCreator = product.createdBy._id.toString() === req.userData.userId;
-    const isAdmin = req.userData.role === "admin";
+    const isActive = product.status === "active";
+    const isCreator =
+      product.createdBy._id.toString() === req.userData?.userId;
+    const isAdmin = req.userData?.role === "admin";
 
-    if (isActive || isCreator || (isAdmin && notDraft)) {
+    // Allow viewing if product is active, user is creator, or admin
+    if (isActive || isCreator || isAdmin) {
       return res.json({ product });
+    }
+
+    // For inactive or draft products, allow viewing if user has an order for this product
+    if ((product.status === "inactive" || product.status === "draft") && req.userData?.userId) {
+      const hasOrder = await Order.findOne({
+        product: product._id,
+        $or: [
+          { buyer: req.userData.userId },
+          { seller: req.userData.userId },
+        ],
+      });
+
+      if (hasOrder) {
+        return res.json({ product });
+      }
     }
 
     return res
@@ -178,7 +210,7 @@ const getProductById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, description, price, category, quantity } = req.body;
+    const { name, description, price, category, quantity, status, condition } = req.body;
     const pid = req.params.pid;
 
     const product = await Product.findById(pid);
@@ -196,13 +228,37 @@ const updateProduct = async (req, res) => {
         .json({ message: "You are not allowed to edit this product." });
     }
 
+    // Cannot edit inactive products (sold out)
+    if (product.status === "inactive") {
+      return res
+        .status(400)
+        .json({ message: "Cannot edit a product that is sold out." });
+    }
+
+    // Prevent setting status to inactive manually (only becomes inactive when quantity reaches 0)
+    if (status && status === "inactive") {
+      return res
+        .status(400)
+        .json({ message: "Status cannot be set to inactive. It becomes inactive automatically when sold out." });
+    }
+
+    // Only allow "active" or "draft" status
+    if (status && !["active", "draft"].includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Status can only be set to 'active' or 'draft'." });
+    }
+
     // Update product fields
     if (name) product.name = name;
     if (description) product.description = description;
     if (price) product.price = price;
     if (category) product.category = category;
     if (quantity) product.quantity = quantity;
-    if (req.body.condition) product.condition = req.body.condition; 
+    if (condition) product.condition = condition; 
+    if (status && ["active", "draft"].includes(status)) {
+      product.status = status;
+    }
 
     await product.save();
 
@@ -221,6 +277,13 @@ const deleteProduct = async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
+    }
+
+    // Cannot delete inactive products (sold out)
+    if (product.status === "inactive") {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete a product that is sold out." });
     }
 
     // Only creator can delete
