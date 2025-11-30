@@ -69,16 +69,18 @@ export default function AddPaymentMethod() {
   };
 
   return (
-    <div className="bg-white text-slate-900 rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border border-slate-300 hover:border-slate-500 max-w-md mx-auto mt-10">
-      <div className="flex items-center gap-2 bg-slate-100 p-4 border-b border-slate-300">
-        <MdCreditCard size={24} className="text-slate-700" />
-        <h2 className="text-xl font-semibold text-slate-800">Add Payment Method</h2>
+    <div className="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 max-w-md mx-auto mt-10">
+      <div className="flex items-center gap-3 bg-slate-100 p-6 border-b border-slate-200">
+        <div className="w-12 h-12 rounded-lg bg-slate-900 flex items-center justify-center">
+          <MdCreditCard size={24} className="text-white" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Add Payment Method</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {/* Cardholder Name */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Cardholder Name</label>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Cardholder Name</label>
           <input
             type="text"
             name="cardName"
@@ -86,13 +88,13 @@ export default function AddPaymentMethod() {
             onChange={handleChange}
             placeholder="Full name as on card"
             required
-            className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white text-slate-900 placeholder-slate-400"
+            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
 
         {/* Card Number */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Card Number</label>
           <input
             type="text"
             name="cardNumber"
@@ -102,49 +104,50 @@ export default function AddPaymentMethod() {
             maxLength={16}
             inputMode="numeric"
             required
-            className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white text-slate-900 placeholder-slate-400"
+            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
 
-        {/* Expiry Date */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Expiry Date</label>
-          <input
-            type="text"
-            name="expiryDate"
-            value={formData.expiryDate}
-            onChange={handleChange}
-            placeholder="MM/YY"
-            required
-            className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white text-slate-900 placeholder-slate-400"
-          />
-        </div>
+        {/* Expiry Date and CVV */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">Expiry Date</label>
+            <input
+              type="text"
+              name="expiryDate"
+              value={formData.expiryDate}
+              onChange={handleChange}
+              placeholder="MM/YY"
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
 
-        {/* CVV */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">CVV</label>
-          <input
-            type="password"
-            name="cvv"
-            value={formData.cvv}
-            onChange={handleChange}
-            placeholder="123"
-            maxLength={4}
-            inputMode="numeric"
-            required
-            className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white text-slate-900 placeholder-slate-400"
-          />
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">CVV</label>
+            <input
+              type="password"
+              name="cvv"
+              value={formData.cvv}
+              onChange={handleChange}
+              placeholder="123"
+              maxLength={4}
+              inputMode="numeric"
+              required
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            />
+          </div>
         </div>
 
         {/* Card Type Dropdown */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Card Type</label>
+          <label className="block text-sm font-semibold text-gray-900 mb-2">Card Type</label>
           <select
             name="type"
             value={formData.type}
             onChange={handleChange}
             required
-            className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white text-slate-900"
+            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           >
             <option value="">Select card type</option>
             <option value="Credit">Credit</option>
@@ -156,8 +159,10 @@ export default function AddPaymentMethod() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 px-4 rounded-md font-medium transition-colors duration-200 ${
-            loading ? "bg-slate-400 cursor-not-allowed text-white" : "bg-slate-800 hover:bg-slate-900 text-white"
+          className={`w-full py-3 px-4 rounded-lg font-semibold ${
+            loading
+              ? "bg-slate-400 cursor-not-allowed text-white"
+              : "bg-slate-900 hover:bg-slate-700 text-white transition-colors"
           }`}
         >
           {loading ? "Saving..." : "Add Payment Method"}
