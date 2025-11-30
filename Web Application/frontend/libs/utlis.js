@@ -225,3 +225,176 @@ export const deleteProduct = async (productId) => {
         throw error;
     }
 };
+
+// Orders & checkout helpers
+export const fetchProductById = async (productId) => {
+    try {
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const res = await fetch(`${API_URL}/api/products/${productId}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to load product");
+        }
+
+        return data.product || data;
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        throw error;
+    }
+};
+
+export const fetchUserPreferences = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/users/me/preferences`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to fetch preferences");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching preferences:", error);
+        throw error;
+    }
+};
+
+export const updateUserPreferences = async (payload) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/users/me/preferences`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to update preferences");
+        }
+
+        return data.preferences || data;
+    } catch (error) {
+        console.error("Error updating preferences:", error);
+        throw error;
+    }
+};
+
+export const createOrder = async (payload) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/orders`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to place order");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error creating order:", error);
+        throw error;
+    }
+};
+
+export const fetchOrders = async (role = "buyer") => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/orders?role=${role}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to load orders");
+        }
+
+        return data.orders || [];
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
+    }
+};
+
+export const fetchOrderById = async (orderId) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to load order");
+        }
+
+        return data.order;
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        throw error;
+    }
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to update order status");
+        }
+
+        return data.order;
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        throw error;
+    }
+};
