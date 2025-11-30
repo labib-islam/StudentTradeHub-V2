@@ -275,23 +275,23 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
 
     return (
         <ProtectedRoute>
-            <div className="fixed inset-0 bg-slate-400/50 flex items-center justify-center z-50 p-2">
-                <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh]">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-black">
-                        <h2 className="text-xl text-center text-black">Edit Profile</h2>
+                    <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-100">
+                        <h2 className="text-2xl font-bold text-gray-900">Edit Profile</h2>
                         <button
                             onClick={handleClose}
                             disabled={loading}
-                            className="text-slate-400 px-2 hover:text-gray-600 transition-colors disabled:opacity-50"
+                            className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 p-1 hover:bg-white rounded-lg"
                         >
                             <MdClose size={24} />
                         </button>
                     </div>
 
                     {/* Form - with scrollable content */}
-                    <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
-                        <form onSubmit={handleSubmit} className="flex flex-col p-3 space-y-3 bg-white rounded-lg">
+                    <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+                        <form onSubmit={handleSubmit} className="flex flex-col p-6 space-y-5 bg-white">
                             {/* Profile Picture */}
                             <div>
                                 <label className="block text-sm font-medium text-black mb-2">
@@ -505,32 +505,35 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
 
                             {/* Error Message */}
                             {error && (
-                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                    {error}
+                                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    <p className="font-semibold">⚠ Error</p>
+                                    <p className="mt-1">{error}</p>
                                 </div>
                             )}
 
                             {/* Success Message */}
                             {success && (
-                                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
-                                    Profile updated successfully!
+                                <div className="bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg text-sm">
+                                    <p className="font-semibold flex items-center gap-2">
+                                        <span className="text-green-500">✓</span> Profile updated successfully!
+                                    </p>
                                 </div>
                             )}
 
                             {/* Action Buttons */}
-                            <div className="flex space-x-3 pt-4">
+                            <div className="flex space-x-3 pt-4 border-t border-slate-200">
                                 <button
                                     type="button"
                                     onClick={handleClose}
                                     disabled={loading}
-                                    className="flex-1 px-4 py-2 text-white bg-red-700 border border-black rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 px-4 py-3 border border-slate-300 text-gray-700 rounded-lg hover:bg-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading || !profileData.first_name.trim() || !profileData.last_name.trim()}
-                                    className="flex-1 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 px-4 py-3 bg-slate-900 hover:bg-slate-700 text-white rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-slate-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {loading ? 'Updating...' : 'Update Profile'}
                                 </button>
