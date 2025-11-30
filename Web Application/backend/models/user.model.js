@@ -63,6 +63,14 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
+    },
     // Legacy payment method storage (still used by /payment/add endpoint)
     paymentMethod: paymentMethodSchema,
     defaultPaymentMethod: safePaymentMethodSchema,
