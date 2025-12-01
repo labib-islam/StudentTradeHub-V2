@@ -80,6 +80,14 @@ const orderSchema = new mongoose.Schema(
     deliveryDetails: deliveryDetailsSchema,
     paymentMethod: paymentSnapshotSchema,
     notes: { type: String, trim: true },
+    isReviewed: {
+      type: Boolean,
+      default: false,
+    },
+    reviewSkipped: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

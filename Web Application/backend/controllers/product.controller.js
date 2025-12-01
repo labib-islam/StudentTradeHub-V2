@@ -139,7 +139,7 @@ const getAllProducts = async (req, res) => {
         .sort(sortOption)
         .skip(skip)
         .limit(limitNum)
-        .populate("createdBy", "firstName lastName email imageUrl")
+        .populate("createdBy", "firstName lastName email imageUrl sellerRating")
         .lean(),
       Product.countDocuments(filter),
     ]);
@@ -167,7 +167,7 @@ const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(pid).populate(
       "createdBy",
-      "firstName lastName email imageUrl pickupAddress defaultDeliveryAddress"
+      "firstName lastName email imageUrl pickupAddress defaultDeliveryAddress sellerRating"
     );
 
     if (!product) {

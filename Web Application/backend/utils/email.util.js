@@ -83,6 +83,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
   };
 
   try {
+    console.log("Sending verification email to:", email);
     await transporter.sendMail(mailOptions);
     return { success: true };
   } catch (error) {

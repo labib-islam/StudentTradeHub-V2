@@ -190,7 +190,7 @@ const getOrderById = async (req, res) => {
     const order = await Order.findById(id)
       .populate("product")
       .populate("buyer", "firstName lastName email")
-      .populate("seller", "firstName lastName email");
+      .populate("seller", "firstName lastName email sellerRating");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found." });
@@ -222,7 +222,7 @@ const getOrdersForUser = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("product")
       .populate("buyer", "firstName lastName email")
-      .populate("seller", "firstName lastName email");
+      .populate("seller", "firstName lastName email sellerRating");
 
     res.status(200).json({ orders });
   } catch (err) {
@@ -245,7 +245,7 @@ const updateOrderStatus = async (req, res) => {
 
     const order = await Order.findById(id)
       .populate("buyer", "firstName lastName email")
-      .populate("seller", "firstName lastName email");
+      .populate("seller", "firstName lastName email sellerRating");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found." });
