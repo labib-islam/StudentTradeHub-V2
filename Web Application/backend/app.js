@@ -7,6 +7,7 @@ import authRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/products.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // handle undefined paths (404 Not Found)
 app.use((req, res, next) => {

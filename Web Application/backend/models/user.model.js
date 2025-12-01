@@ -83,6 +83,20 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    // Seller rating statistics
+    sellerRating: {
+      averageRating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+      },
+      totalReviews: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+    },
     // Legacy payment method storage (still used by /payment/add endpoint)
     paymentMethod: paymentMethodSchema,
     defaultPaymentMethod: safePaymentMethodSchema,
