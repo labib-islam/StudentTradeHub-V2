@@ -16,6 +16,7 @@ const SignUp = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState({
         score: 0,
@@ -82,6 +83,7 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
 
         // Validate email format
         if (!validateEmail(formData.email)) {
@@ -126,15 +128,34 @@ const SignUp = () => {
         setIsLoading(true);
 
         try {
-            await signup({
-                firstName: formData.first_name,
-                lastName: formData.last_name,
-                email: formData.email,
-                password: formData.password
+            const response = await fetch('http://localhost:8800/api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstName: formData.first_name,
+                    lastName: formData.last_name,
+                    email: formData.email,
+                    password: formData.password
+                }),
             });
 
-            await checkAuth();
-            router.push('/'); // Redirect to home page on success
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess(data.message);
+                // Clear form
+                setFormData({
+                    email: '',
+                    first_name: '',
+                    last_name: '',
+                    password: '',
+                    confirm_password: '',
+                });
+            } else {
+                setError(data.message || 'An error occurred during signup');
+            }
         } catch (err) {
             setError(err.message || 'An error occurred during signup');
         } finally {
@@ -166,6 +187,13 @@ const SignUp = () => {
                 <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
                     <form onSubmit={handleSubmit}>
                         <h2 className="text-3xl mb-6 text-center font-bold text-gray-900">Sign Up</h2>
+                        {success && (
+                            <div className="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-sm rounded-lg">
+                                <p className="font-semibold">✓ Success</p>
+                                <p className="mt-1">{success}</p>
+                                <p className="mt-2 text-xs">Please check your email inbox and click the verification link.</p>
+                            </div>
+                        )}
                         {error && (
                             <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-lg">
                                 <p className="font-semibold">⚠ Error</p>

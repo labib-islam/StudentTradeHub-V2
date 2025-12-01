@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { sendPasswordResetEmail } from "../utils/email.util.js";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.util.js";
 
 // Signup
 const signup = async (req, res) => {
@@ -28,26 +28,43 @@ const signup = async (req, res) => {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // create and save new user to the DB
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash token before saving to database
+    const hashedVerificationToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+
+    // create and save new user to the DB (not verified yet)
     const newUser = new User({
       firstName,
       lastName,
       email,
       password: hashedPassword,
+      isEmailVerified: false,
+      emailVerificationToken: hashedVerificationToken,
+      emailVerificationExpires: Date.now() + 86400000, // 24 hours
     });
 
     const savedUser = await newUser.save();
 
-    // sign the token
-    const token = jwt.sign(
-      {
-        userId: savedUser._id,
-        userEmail: savedUser.email,
-      },
-      process.env.JWT_SECRET
-    );
+    // Send verification email
+    const emailResult = await sendVerificationEmail(email, verificationToken);
 
-    res.send({ token });
+    if (!emailResult.success) {
+      // If email fails, delete the user and return error
+      await User.findByIdAndDelete(savedUser._id);
+      return res.status(500).json({
+        message: "Error sending verification email. Please try again later."
+      });
+    }
+
+    res.status(201).json({
+      message: "Account created successfully! Please check your email to verify your account before logging in.",
+      email: email
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send();
@@ -70,6 +87,13 @@ const login = async (req, res) => {
     const existingUser = await User.findOne({ email }).select("+password");
     if (!existingUser)
       return res.status(401).json({ message: "Wrong email or password" });
+
+    // Check if email is verified
+    if (!existingUser.isEmailVerified) {
+      return res.status(403).json({
+        message: "Please verify your email before logging in. Check your inbox for the verification link."
+      });
+    }
 
     // Password Varification
     const verifyPassword = await bcrypt.compare(
@@ -231,4 +255,48 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export default { signup, login, logout, getCurrentUser, forgotPassword, resetPassword };
+// Verify Email - Confirm email with token
+const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        message: "Verification token is required."
+      });
+    }
+
+    // Hash the token to compare with stored hash
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // Find user with valid token and not expired
+    const user = await User.findOne({
+      emailVerificationToken: hashedToken,
+      emailVerificationExpires: { $gt: Date.now() }
+    }).select("+emailVerificationToken +emailVerificationExpires");
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired verification token."
+      });
+    }
+
+    // Update user to verified and clear verification fields
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      message: "Email verified successfully! You can now log in to your account."
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+};
+
+export default { signup, login, logout, getCurrentUser, forgotPassword, resetPassword, verifyEmail };

@@ -71,6 +71,18 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      select: false,
+    },
+    emailVerificationExpires: {
+      type: Date,
+      select: false,
+    },
     // Legacy payment method storage (still used by /payment/add endpoint)
     paymentMethod: paymentMethodSchema,
     defaultPaymentMethod: safePaymentMethodSchema,
