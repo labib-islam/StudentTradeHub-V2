@@ -104,11 +104,19 @@ const login = async (req, res) => {
     if (!verifyPassword)
       return res.status(401).json({ message: "Wrong email or password" });
 
-    // sign the token
+    // Blocked users cannot log in
+    if (existingUser.status === "blocked") {
+      return res
+        .status(403)
+        .json({ message: "Your account has been blocked. Please contact support." });
+    }
+
+    // sign the token (include role)
     const token = jwt.sign(
       {
         userId: existingUser._id,
         userEmail: existingUser.email,
+        role: existingUser.role,
       },
       process.env.JWT_SECRET
     );

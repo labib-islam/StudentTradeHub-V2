@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import { fetchOrders } from "@/libs/utlis";
 import { useSearch } from "@/context/SearchContext";
 
@@ -88,7 +88,7 @@ export default function OrdersPage() {
   }, [activeTab, buyerOrders, sellerOrders, searchTerm, selectedStatus]);
 
   return (
-    <ProtectedRoute>
+    <UserRoute>
       <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
           <header className="mb-8">
@@ -327,7 +327,7 @@ export default function OrdersPage() {
           )}
         </div>
       </div>
-    </ProtectedRoute>
+    </UserRoute>
   );
 }
 

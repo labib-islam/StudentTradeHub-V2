@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import { fetchUserPreferences, updateUserPreferences } from "@/libs/utlis";
 
 const emptyAddress = {
@@ -73,7 +73,7 @@ export default function AddressPreferencesPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <UserRoute>
       <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
           <header className="mb-8">
@@ -260,7 +260,7 @@ export default function AddressPreferencesPage() {
           )}
         </div>
       </div>
-    </ProtectedRoute>
+    </UserRoute>
   );
 }
 

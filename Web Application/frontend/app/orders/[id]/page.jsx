@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import { useAuth } from "@/context/AuthContext";
 import { fetchOrderById, updateOrderStatus, createReview, skipReview, getReviewByOrder } from "@/libs/utlis";
 import ReviewModal from "@/components/ReviewModal";
@@ -176,7 +176,7 @@ export default function OrderDetailPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <UserRoute>
       <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
@@ -551,7 +551,7 @@ export default function OrderDetailPage() {
           )}
         </div>
       </div>
-    </ProtectedRoute>
+    </UserRoute>
   );
 }
 

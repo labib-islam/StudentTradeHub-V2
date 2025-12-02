@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import ProductForm from "@/components/ProductForm";
 import ProductCard from "@/components/ProductCard";
 import { useAuth } from "@/context/AuthContext";
@@ -179,7 +179,7 @@ export default function SellPage() {
     };
 
     return (
-        <ProtectedRoute>
+        <UserRoute>
             <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
@@ -327,6 +327,6 @@ export default function SellPage() {
                     )}
                 </div>
             </div>
-        </ProtectedRoute>
+        </UserRoute>
     );
 }

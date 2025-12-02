@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import {
   fetchProductById,
   fetchUserPreferences,
@@ -210,7 +210,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <ProtectedRoute>
+    <UserRoute>
       <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-10">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
@@ -608,7 +608,7 @@ export default function CheckoutPage() {
           )}
         </div>
       </div>
-    </ProtectedRoute>
+    </UserRoute>
   );
 }
 
