@@ -8,7 +8,9 @@ const router = Router();
 router.get("/search", userController.searchUsers);
 
 // Protected routes - require authentication
-router.get("/", checkAuth(), userController.getAllUsers);
+router.get("/", checkAuth("admin"), userController.getAllUsers);
+router.get("/:id/activity", checkAuth("admin"), userController.getUserActivitySummary);
+router.patch("/:id/status", checkAuth("admin"), userController.updateUserStatus);
 router.get("/:id", checkAuth(), userController.getUserById);
 router.put("/:id", checkAuth(), userController.updateUser);
 router.delete("/:id", checkAuth(), userController.deleteUser);
