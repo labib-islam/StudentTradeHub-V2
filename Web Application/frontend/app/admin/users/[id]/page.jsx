@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { MdShoppingCart } from "react-icons/md";
 
 const API_URL =
@@ -386,7 +387,10 @@ function ProductCard({ product: p }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col">
+    <Link
+      href={`/admin/products/${p._id}`}
+      className="block rounded-xl border border-slate-200 bg-white overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+    >
       {/* Product Image */}
       <div className="relative h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
         {p.imageUrl && !imageError ? (
@@ -433,7 +437,7 @@ function ProductCard({ product: p }) {
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -513,7 +517,10 @@ function OrderCard({ order: o }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+    <Link
+      href={`/admin/orders/${o._id}`}
+      className="block rounded-xl border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-shadow"
+    >
       <div className="flex gap-4">
         {/* Product Image */}
         <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -566,7 +573,7 @@ function OrderCard({ order: o }) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
