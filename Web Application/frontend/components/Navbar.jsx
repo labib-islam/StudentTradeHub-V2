@@ -56,13 +56,15 @@ export default function Navbar() {
         "cancelled",
     ];
     const pathname = usePathname();
-
+    const isAdmin = user?.role === "admin";
+    
     // Determine which filters to show based on current page
-    const isBuyPage = pathname === "/buy";
-    const isSellPage = pathname === "/sell";
-    const isOrdersPage = pathname.startsWith("/orders");
-    const showProductFilters = isBuyPage || isSellPage;
-    const showOrderFilters = isOrdersPage;
+    const isBuyPage = !isAdmin && pathname === "/buy";
+    const isSellPage = !isAdmin && pathname === "/sell";
+    const isOrdersPage = !isAdmin && pathname.startsWith("/orders");
+    const isAdminPage = isAdmin && pathname.startsWith("/admin");
+    const showProductFilters = !isAdmin && (isBuyPage || isSellPage);
+    const showOrderFilters = !isAdmin && isOrdersPage;
 
 
     useEffect(() => {
@@ -148,7 +150,7 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50 mb-6">
+        <nav className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
             {/* Top Bar - Logo, Search, Profile */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 gap-4">
@@ -161,18 +163,20 @@ export default function Navbar() {
                     </a>
 
                     {/* Search Bar - Hidden on mobile, visible on md+ */}
-                    <div className="hidden md:flex items-center gap-2 flex-1 max-w-2xl mx-4">
-                        <div className="relative flex-1">
-                            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                            <input
-                                type="text"
-                                placeholder={isOrdersPage ? "Search orders..." : "Search products..."}
-                                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                    {!isAdminPage && (
+                        <div className="hidden md:flex items-center gap-2 flex-1 max-w-2xl mx-4">
+                            <div className="relative flex-1">
+                                <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                                <input
+                                    type="text"
+                                    placeholder={isOrdersPage ? "Search orders..." : "Search products..."}
+                                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Profile Dropdown */}
                     <div className="relative flex-shrink-0" ref={dropdownRef}>
@@ -269,50 +273,66 @@ export default function Navbar() {
                 </div>
 
                 {/* Mobile Search Bar */}
-                <div className="md:hidden pb-3">
-                    <div className="relative">
-                        <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                        <input
-                            type="text"
-                            placeholder={isOrdersPage ? "Search orders..." : "Search products..."}
-                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                {!isAdminPage && (
+                    <div className="md:hidden pb-3">
+                        <div className="relative">
+                            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                            <input
+                                type="text"
+                                placeholder={isOrdersPage ? "Search orders..." : "Search products..."}
+                                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-lg text-gray-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Navigation Tabs and Filters - Mobile responsive */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 pt-2 border-t border-slate-100">
                     {/* Navigation Tabs */}
                     <div className="flex items-center gap-2">
-                        <a
-                            href="/buy"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/buy"
-                                ? "bg-slate-900 text-white"
-                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                                }`}
-                        >
-                            Buy
-                        </a>
-                        <a
-                            href="/sell"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/sell"
-                                ? "bg-slate-900 text-white"
-                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                                }`}
-                        >
-                            Sell
-                        </a>
-                        <a
-                            href="/orders"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname.startsWith("/orders")
-                                ? "bg-slate-900 text-white"
-                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                                }`}
-                        >
-                            Orders
-                        </a>
+                        {isAdmin ? (
+                            <a
+                                href="/admin"
+                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname.startsWith("/admin")
+                                    ? "bg-slate-900 text-white"
+                                    : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                    }`}
+                            >
+                                Admin
+                            </a>
+                        ) : (
+                            <>
+                                <a
+                                    href="/buy"
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/buy"
+                                        ? "bg-slate-900 text-white"
+                                        : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                        }`}
+                                >
+                                    Buy
+                                </a>
+                                <a
+                                    href="/sell"
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/sell"
+                                        ? "bg-slate-900 text-white"
+                                        : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                        }`}
+                                >
+                                    Sell
+                                </a>
+                                <a
+                                    href="/orders"
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname.startsWith("/orders")
+                                        ? "bg-slate-900 text-white"
+                                        : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                        }`}
+                                >
+                                    Orders
+                                </a>
+                            </>
+                        )}
                     </div>
 
                     {/* Filters Section */}
@@ -477,7 +497,6 @@ export default function Navbar() {
                     )}
                 </div>
             </div>
-
             {/* Edit Profile Modal */}
             <EditProfile
                 isOpen={isEditProfileOpen}

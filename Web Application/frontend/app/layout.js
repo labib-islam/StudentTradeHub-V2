@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className="bg-gradient-to-t from-slate-900 to-slate-700 text-gray-100 min-h-screen font-sans"
+        className="bg-slate-50 text-slate-900 min-h-screen font-sans"
       >
         <AuthProvider>
           <SearchProvider>

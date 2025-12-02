@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 
 
 export default function DashboardPage() {
@@ -17,10 +17,10 @@ export default function DashboardPage() {
 
   // Show loading state while redirecting
   return (
-    <ProtectedRoute>
+    <UserRoute>
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">Redirecting...</div>
       </div>
-    </ProtectedRoute>
+    </UserRoute>
   );
 }

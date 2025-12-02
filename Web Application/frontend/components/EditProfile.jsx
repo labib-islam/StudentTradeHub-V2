@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { MdClose, MdCloudUpload } from 'react-icons/md';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import ProtectedRoute from './ProtectedRoute';
+import UserRoute from './UserRoute';
 import { updateUserInfo, updateUserInfoWithPicture } from '@/libs/utlis';
 
 export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate }) {
@@ -274,7 +274,7 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
     if (!isOpen) return null;
 
     return (
-        <ProtectedRoute>
+        <UserRoute>
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden">
                     {/* Header */}
@@ -542,6 +542,6 @@ export default function EditProfile({ isOpen, onClose, userData, onProfileUpdate
                     </div>
                 </div>
             </div>
-        </ProtectedRoute>
+        </UserRoute>
     );
 }

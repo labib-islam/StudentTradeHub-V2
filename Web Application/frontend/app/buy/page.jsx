@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import UserRoute from "@/components/UserRoute";
 import { useSearch } from "@/context/SearchContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -74,7 +74,7 @@ export default function BuyPage() {
     }, [searchTerm, selectedCategory, selectedCondition, user?._id]);
 
     return (
-        <ProtectedRoute>
+        <UserRoute>
             <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
@@ -151,6 +151,6 @@ export default function BuyPage() {
                     )}
                 </div>
             </div>
-        </ProtectedRoute>
+        </UserRoute>
     );
 }
