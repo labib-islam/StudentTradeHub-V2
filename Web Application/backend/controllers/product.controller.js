@@ -344,6 +344,37 @@ const suggestProducts = async (req, res) => {
   }
 };
 
+// Admin: update product status (allows setting any status including inactive)
+const updateProductStatusAdmin = async (req, res) => {
+  try {
+    const { pid } = req.params;
+    const { status } = req.body;
+
+    if (!status || !["active", "inactive", "draft"].includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid status. Must be 'active', 'inactive', or 'draft'." });
+    }
+
+    const product = await Product.findById(pid);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    product.status = status;
+    await product.save();
+
+    res.status(200).json({
+      message: "Product status updated successfully.",
+      product,
+    });
+  } catch (err) {
+    console.error("Error updating product status (admin):", err.message);
+    res.status(500).json({ message: "Failed to update product status." });
+  }
+};
+
 export default {
   createProduct,
   getAllProducts,
@@ -351,4 +382,5 @@ export default {
   updateProduct,
   deleteProduct,
   suggestProducts,
+  updateProductStatusAdmin,
 };
