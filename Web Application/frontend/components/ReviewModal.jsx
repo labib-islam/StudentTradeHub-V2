@@ -1,6 +1,9 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
 
 const ReviewModal = ({ order, onClose, onSubmit, onSkip }) => {
     const [rating, setRating] = useState(0);
@@ -44,15 +47,21 @@ const ReviewModal = ({ order, onClose, onSubmit, onSkip }) => {
                     {/* Product Info */}
                     <div className="mb-6 p-4 bg-slate-50 rounded-lg">
                         <div className="flex items-center gap-4">
-                            {order.product?.imageUrl && (
-                                <img
-                                    src={`http://localhost:8800${order.product.imageUrl}`}
-                                    alt={order.product.name}
-                                    className="w-16 h-16 object-cover rounded-lg"
-                                />
-                            )}
+                            <div className="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                {order.product?.imageUrl ? (
+                                    <img
+                                        src={`${API_URL}/${order.product.imageUrl}`}
+                                        alt={order.product?.name || "Product"}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-slate-400 text-xs">No image</span>
+                                )}
+                            </div>
                             <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900">{order.product?.name}</h3>
+                                <h3 className="font-semibold text-gray-900">
+                                    {order.product?.name || "Product"}
+                                </h3>
                                 <p className="text-sm text-gray-600">
                                     Seller: {order.seller?.firstName} {order.seller?.lastName}
                                 </p>
