@@ -196,10 +196,12 @@ const getOrderById = async (req, res) => {
       return res.status(404).json({ message: "Order not found." });
     }
 
-    if (
-      order.buyer._id.toString() !== req.userData.userId &&
-      order.seller._id.toString() !== req.userData.userId
-    ) {
+    // Allow admins to access any order
+    const isAdmin = req.userData.role === "admin";
+    const isBuyer = order.buyer._id.toString() === req.userData.userId;
+    const isSeller = order.seller._id.toString() === req.userData.userId;
+
+    if (!isAdmin && !isBuyer && !isSeller) {
       return res.status(403).json({ message: "Access denied." });
     }
 
@@ -244,6 +246,7 @@ const updateOrderStatus = async (req, res) => {
     }
 
     const order = await Order.findById(id)
+      .populate("product")
       .populate("buyer", "firstName lastName email")
       .populate("seller", "firstName lastName email sellerRating");
 
@@ -269,7 +272,14 @@ const updateOrderStatus = async (req, res) => {
       }
       order.fulfillmentStatus = "cancelled";
       await order.save();
-      return res.status(200).json({ order });
+      
+      // Repopulate after save to ensure all fields are included
+      const updatedOrder = await Order.findById(id)
+        .populate("product")
+        .populate("buyer", "firstName lastName email")
+        .populate("seller", "firstName lastName email sellerRating");
+      
+      return res.status(200).json({ order: updatedOrder });
     }
 
     if (!pipeline.includes(status)) {
@@ -288,7 +298,13 @@ const updateOrderStatus = async (req, res) => {
     order.fulfillmentStatus = status;
     await order.save();
 
-    res.status(200).json({ order });
+    // Repopulate after save to ensure all fields are included
+    const updatedOrder = await Order.findById(id)
+      .populate("product")
+      .populate("buyer", "firstName lastName email")
+      .populate("seller", "firstName lastName email sellerRating");
+
+    res.status(200).json({ order: updatedOrder });
   } catch (err) {
     console.error("Failed to update order status:", err.message);
     res.status(500).json({ message: "Failed to update order status." });
@@ -316,11 +332,212 @@ const getOrdersForUserAdmin = async (req, res) => {
   }
 };
 
+// Admin: Get all orders with filters
+const getAllOrdersAdmin = async (req, res) => {
+  try {
+    const {
+      search,
+      paymentStatus,
+      fulfillmentStatus,
+      deliveryType,
+      page = 1,
+      limit = 50,
+    } = req.query;
+
+    const filter = {};
+
+    // Status filters
+    if (paymentStatus && paymentStatus !== "all") {
+      filter.paymentStatus = paymentStatus;
+    }
+    if (fulfillmentStatus && fulfillmentStatus !== "all") {
+      filter.fulfillmentStatus = fulfillmentStatus;
+    }
+    if (deliveryType && deliveryType !== "all") {
+      filter.deliveryType = deliveryType;
+    }
+
+    // Search filter for order number (can search on direct field)
+    if (search) {
+      const searchRegex = { $regex: search, $options: "i" };
+      filter.orderNumber = searchRegex;
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    let orders = await Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .populate("product", "name imageUrl")
+      .populate("buyer", "firstName lastName email")
+      .populate("seller", "firstName lastName email");
+
+    // Client-side search filtering for buyer, seller, product names
+    if (search) {
+      const searchLower = search.toLowerCase();
+      orders = orders.filter((order) => {
+        const buyerName = `${order.buyer?.firstName || ""} ${order.buyer?.lastName || ""}`.toLowerCase();
+        const sellerName = `${order.seller?.firstName || ""} ${order.seller?.lastName || ""}`.toLowerCase();
+        const productName = (order.product?.name || "").toLowerCase();
+        return (
+          buyerName.includes(searchLower) ||
+          sellerName.includes(searchLower) ||
+          productName.includes(searchLower) ||
+          (order.orderNumber && order.orderNumber.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    const total = await Order.countDocuments(filter);
+
+    res.status(200).json({
+      orders,
+      pagination: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum),
+        hasNext: skip + orders.length < total,
+      },
+    });
+  } catch (err) {
+    console.error("Failed to fetch all orders (admin):", err.message);
+    res.status(500).json({ message: "Failed to fetch orders." });
+  }
+};
+
+// Admin: Update order status (both payment and fulfillment)
+const updateOrderStatusAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { paymentStatus, fulfillmentStatus } = req.body;
+
+    const order = await Order.findById(id)
+      .populate("buyer", "firstName lastName email")
+      .populate("seller", "firstName lastName email")
+      .populate("product", "name");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    // Update payment status if provided
+    if (paymentStatus && ["pending", "paid", "failed", "refunded"].includes(paymentStatus)) {
+      order.paymentStatus = paymentStatus;
+    }
+
+    // Update fulfillment status if provided
+    if (
+      fulfillmentStatus &&
+      [
+        "pending",
+        "confirmed",
+        "ready_for_pickup",
+        "out_for_delivery",
+        "delivered",
+        "picked_up",
+        "cancelled",
+      ].includes(fulfillmentStatus)
+    ) {
+      order.fulfillmentStatus = fulfillmentStatus;
+    }
+
+    if (!paymentStatus && !fulfillmentStatus) {
+      return res.status(400).json({
+        message: "Either paymentStatus or fulfillmentStatus must be provided.",
+      });
+    }
+
+    await order.save();
+
+    res.status(200).json({
+      message: "Order status updated successfully.",
+      order,
+    });
+  } catch (err) {
+    console.error("Failed to update order status (admin):", err.message);
+    res.status(500).json({ message: "Failed to update order status." });
+  }
+};
+
+// Admin: Get order statistics
+const getOrderStatistics = async (req, res) => {
+  try {
+    const [
+      totalOrders,
+      totalRevenue,
+      pendingOrders,
+      completedOrders,
+      cancelledOrders,
+      ordersByPaymentStatus,
+      ordersByFulfillmentStatus,
+    ] = await Promise.all([
+      Order.countDocuments(),
+      Order.aggregate([
+        { $match: { paymentStatus: "paid" } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Order.countDocuments({ fulfillmentStatus: "pending" }),
+      Order.countDocuments({
+        fulfillmentStatus: { $in: ["delivered", "picked_up"] },
+      }),
+      Order.countDocuments({ fulfillmentStatus: "cancelled" }),
+      Order.aggregate([
+        {
+          $group: {
+            _id: "$paymentStatus",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      Order.aggregate([
+        {
+          $group: {
+            _id: "$fulfillmentStatus",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+
+    const revenue = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+
+    const paymentStatusBreakdown = ordersByPaymentStatus.reduce((acc, item) => {
+      acc[item._id] = item.count;
+      return acc;
+    }, {});
+
+    const fulfillmentStatusBreakdown = ordersByFulfillmentStatus.reduce((acc, item) => {
+      acc[item._id] = item.count;
+      return acc;
+    }, {});
+
+    res.status(200).json({
+      totalOrders,
+      totalRevenue: revenue,
+      pendingOrders,
+      completedOrders,
+      cancelledOrders,
+      paymentStatusBreakdown,
+      fulfillmentStatusBreakdown,
+    });
+  } catch (err) {
+    console.error("Failed to fetch order statistics:", err.message);
+    res.status(500).json({ message: "Failed to fetch order statistics." });
+  }
+};
+
 export default {
   createOrder,
   getOrderById,
   getOrdersForUser,
   updateOrderStatus,
   getOrdersForUserAdmin,
+  getAllOrdersAdmin,
+  updateOrderStatusAdmin,
+  getOrderStatistics,
 };
 
