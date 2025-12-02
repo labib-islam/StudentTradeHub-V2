@@ -8,14 +8,15 @@ const router = Router();
 
 router.get("/", checkAuth(), productController.getAllProducts);
 router.get("/suggest", productController.suggestProducts);
-router.get("/:pid", checkAuth(), productController.getProductById);
 router.post(
   "/new",
   checkAuth("user"),
   fileUpload.single("image"),
   productController.createProduct
 );
+router.patch("/:pid/status", checkAuth("admin"), productController.updateProductStatusAdmin);
 router.patch("/:pid", checkAuth("user"), productController.updateProduct);
+router.get("/:pid", checkAuth(), productController.getProductById);
 router.delete("/:pid", checkAuth("user"), productController.deleteProduct);
 
 export default router;

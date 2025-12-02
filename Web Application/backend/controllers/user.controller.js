@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import Order from "../models/order.model.js";
+import Product from "../models/product.model.js";
 import bcrypt from "bcrypt";
 
 const buildSafePaymentSnapshot = (payment) => {
@@ -389,6 +390,14 @@ const updateUserStatus = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
+    }
+
+    // When a user is blocked, set all their products to inactive
+    if (status === "blocked") {
+      await Product.updateMany(
+        { createdBy: id, status: { $ne: "inactive" } },
+        { status: "inactive" }
+      );
     }
 
     res.status(200).json({
