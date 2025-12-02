@@ -433,11 +433,10 @@ export default function CheckoutPage() {
                   {hasPickupOption && (
                     <button
                       type="button"
-                      className={`flex-1 px-4 py-3 rounded-lg border ${
-                        deliveryType === "pickup"
+                      className={`flex-1 px-4 py-3 rounded-lg border ${deliveryType === "pickup"
                           ? "border-slate-900 bg-slate-900 text-white"
                           : "border-slate-300 text-slate-700"
-                      }`}
+                        }`}
                       onClick={() => setDeliveryType("pickup")}
                     >
                       Pickup
@@ -445,11 +444,10 @@ export default function CheckoutPage() {
                   )}
                   <button
                     type="button"
-                    className={`flex-1 px-4 py-3 rounded-lg border ${
-                      deliveryType === "deliver"
+                    className={`flex-1 px-4 py-3 rounded-lg border ${deliveryType === "deliver"
                         ? "border-slate-900 bg-slate-900 text-white"
                         : "border-slate-300 text-slate-700"
-                    }`}
+                      }`}
                     onClick={() => setDeliveryType("deliver")}
                   >
                     Deliver

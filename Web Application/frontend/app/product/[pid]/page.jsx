@@ -181,13 +181,12 @@ export default function ProductDetailsPage() {
                       Status
                     </p>
                     <span
-                      className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.status === "active"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : product.status === "inactive"
+                      className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${product.status === "active"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : product.status === "inactive"
                           ? "bg-slate-100 text-slate-700"
                           : "bg-amber-100 text-amber-700"
-                      }`}
+                        }`}
                     >
                       {product.status}
                     </span>
@@ -214,6 +213,13 @@ export default function ProductDetailsPage() {
                     <p className="text-slate-600 text-sm">
                       {product.createdBy.email}
                     </p>
+                    {product.createdBy.sellerRating?.totalReviews > 0 && (
+                      <div className="text-sm text-yellow-500 font-medium flex items-center gap-1 mt-2">
+                        <span>★</span>
+                        <span>{product.createdBy.sellerRating.averageRating.toFixed(1)}</span>
+                        <span className="text-slate-600">({product.createdBy.sellerRating.totalReviews} {product.createdBy.sellerRating.totalReviews === 1 ? 'review' : 'reviews'})</span>
+                      </div>
+                    )}
                   </div>
                 )}
 

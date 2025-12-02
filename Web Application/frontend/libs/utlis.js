@@ -75,7 +75,15 @@ export const updateUserInfoWithPicture = async (userId, updatedInfo, profilePicF
 // Product-related functions
 export const fetchAllProducts = async () => {
     try {
-        const response = await fetch(`${API_URL}/api/products/`);
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+        const response = await fetch(`${API_URL}/api/products/`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         if (!response.ok) {
             throw new Error("Failed to fetch products");
         }
@@ -395,6 +403,106 @@ export const updateOrderStatus = async (orderId, status) => {
         return data.order;
     } catch (error) {
         console.error("Error updating order status:", error);
+        throw error;
+    }
+};
+
+// Review-related functions
+export const createReview = async (orderId, rating, comment) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/reviews`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderId, rating, comment }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to submit review");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error creating review:", error);
+        throw error;
+    }
+};
+
+export const skipReview = async (orderId) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/reviews/skip`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ orderId }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to skip review");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error skipping review:", error);
+        throw error;
+    }
+};
+
+export const getSellerReviews = async (sellerId, page = 1, limit = 10) => {
+    try {
+        const res = await fetch(
+            `${API_URL}/api/reviews/seller/${sellerId}?page=${page}&limit=${limit}`
+        );
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to fetch reviews");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error fetching seller reviews:", error);
+        throw error;
+    }
+};
+
+export const getReviewByOrder = async (orderId) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            throw new Error("Authentication required");
+        }
+
+        const res = await fetch(`${API_URL}/api/reviews/order/${orderId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to fetch review");
+        }
+
+        return data.review;
+    } catch (error) {
+        console.error("Error fetching review:", error);
         throw error;
     }
 };

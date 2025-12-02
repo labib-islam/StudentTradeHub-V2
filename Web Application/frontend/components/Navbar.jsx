@@ -56,7 +56,7 @@ export default function Navbar() {
         "cancelled",
     ];
     const pathname = usePathname();
-    
+
     // Determine which filters to show based on current page
     const isBuyPage = pathname === "/buy";
     const isSellPage = pathname === "/sell";
@@ -177,9 +177,8 @@ export default function Navbar() {
                     {/* Profile Dropdown */}
                     <div className="relative flex-shrink-0" ref={dropdownRef}>
                         <button
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                                isDropdownOpen ? 'bg-slate-100' : 'hover:bg-slate-100'
-                            }`}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${isDropdownOpen ? 'bg-slate-100' : 'hover:bg-slate-100'
+                                }`}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
                             {loading ? (
@@ -197,13 +196,36 @@ export default function Navbar() {
                                     {user?.firstName?.[0]}{user?.lastName?.[0]}
                                 </div>
                             )}
-                            <span className="hidden sm:block text-sm font-medium text-gray-700">
-                                {user?.firstName} {user?.lastName}
-                            </span>
+                            <div className="hidden sm:block">
+                                <div className="text-sm font-medium text-gray-700">
+                                    {user?.firstName} {user?.lastName}
+                                </div>
+                                {user?.sellerRating?.totalReviews > 0 && (
+                                    <div className="text-xs text-yellow-500 font-medium flex items-center gap-1">
+                                        <span>★</span>
+                                        <span>{user.sellerRating.averageRating.toFixed(1)}</span>
+                                        <span className="text-slate-500">({user.sellerRating.totalReviews})</span>
+                                    </div>
+                                )}
+                            </div>
                         </button>
 
                         {isDropdownOpen && (
                             <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 overflow-hidden">
+                                {/* User info section in dropdown */}
+                                <div className="px-4 py-3 border-b border-slate-100">
+                                    <div className="font-medium text-gray-900 text-sm">
+                                        {user?.firstName} {user?.lastName}
+                                    </div>
+                                    <div className="text-xs text-slate-600 mt-0.5">{user?.email}</div>
+                                    {user?.sellerRating?.totalReviews > 0 && (
+                                        <div className="text-xs text-yellow-500 font-medium flex items-center gap-1 mt-1">
+                                            <span>★</span>
+                                            <span>{user.sellerRating.averageRating.toFixed(1)}</span>
+                                            <span className="text-slate-500">({user.sellerRating.totalReviews} reviews)</span>
+                                        </div>
+                                    )}
+                                </div>
                                 <button
                                     className="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-slate-100 inline-flex items-center gap-3 transition-colors"
                                     onClick={handleEditProfileClick}
@@ -266,31 +288,28 @@ export default function Navbar() {
                     <div className="flex items-center gap-2">
                         <a
                             href="/buy"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                pathname === "/buy"
-                                    ? "bg-slate-900 text-white"
-                                    : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                            }`}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/buy"
+                                ? "bg-slate-900 text-white"
+                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                }`}
                         >
                             Buy
                         </a>
                         <a
                             href="/sell"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                pathname === "/sell"
-                                    ? "bg-slate-900 text-white"
-                                    : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                            }`}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname === "/sell"
+                                ? "bg-slate-900 text-white"
+                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                }`}
                         >
                             Sell
                         </a>
                         <a
                             href="/orders"
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                pathname.startsWith("/orders")
-                                    ? "bg-slate-900 text-white"
-                                    : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
-                            }`}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${pathname.startsWith("/orders")
+                                ? "bg-slate-900 text-white"
+                                : "text-gray-700 hover:text-slate-900 hover:bg-slate-100"
+                                }`}
                         >
                             Orders
                         </a>
@@ -303,7 +322,7 @@ export default function Navbar() {
                                 <MdFilterList size={18} />
                                 <span className="hidden sm:inline">Filters</span>
                             </div>
-                            
+
                             {/* Product Filters - Show for Buy and Sell pages */}
                             {showProductFilters && (
                                 <>
@@ -329,11 +348,10 @@ export default function Navbar() {
                                                                     setSelectedCategory(value);
                                                                     setIsCategoryOpen(false);
                                                                 }}
-                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                                                    selectedCategory === value
-                                                                        ? "bg-slate-900 text-white"
-                                                                        : "text-gray-700 hover:bg-slate-100"
-                                                                }`}
+                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${selectedCategory === value
+                                                                    ? "bg-slate-900 text-white"
+                                                                    : "text-gray-700 hover:bg-slate-100"
+                                                                    }`}
                                                             >
                                                                 {cat === "all" ? "All" : cat}
                                                             </button>
@@ -366,11 +384,10 @@ export default function Navbar() {
                                                                     setSelectedCondition(value);
                                                                     setIsConditionOpen(false);
                                                                 }}
-                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                                                    selectedCondition === value
-                                                                        ? "bg-slate-900 text-white"
-                                                                        : "text-gray-700 hover:bg-slate-100"
-                                                                }`}
+                                                                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${selectedCondition === value
+                                                                    ? "bg-slate-900 text-white"
+                                                                    : "text-gray-700 hover:bg-slate-100"
+                                                                    }`}
                                                             >
                                                                 {cond === "all" ? "All" : cond}
                                                             </button>
@@ -403,11 +420,10 @@ export default function Navbar() {
                                                                         setSelectedStatus(value);
                                                                         setIsStatusOpen(false);
                                                                     }}
-                                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                                                        selectedStatus === value
-                                                                            ? "bg-slate-900 text-white"
-                                                                            : "text-gray-700 hover:bg-slate-100"
-                                                                    }`}
+                                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${selectedStatus === value
+                                                                        ? "bg-slate-900 text-white"
+                                                                        : "text-gray-700 hover:bg-slate-100"
+                                                                        }`}
                                                                 >
                                                                     {status === "all" ? "All" : status.charAt(0).toUpperCase() + status.slice(1)}
                                                                 </button>
@@ -443,11 +459,10 @@ export default function Navbar() {
                                                                 setSelectedStatus(value);
                                                                 setIsStatusOpen(false);
                                                             }}
-                                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                                                selectedStatus === value
-                                                                    ? "bg-slate-900 text-white"
-                                                                    : "text-gray-700 hover:bg-slate-100"
-                                                            }`}
+                                                            className={`w-full text-left px-3 py-2 rounded-lg text-sm ${selectedStatus === value
+                                                                ? "bg-slate-900 text-white"
+                                                                : "text-gray-700 hover:bg-slate-100"
+                                                                }`}
                                                         >
                                                             {status === "all" ? "All" : status.replace(/_/g, " ")}
                                                         </button>
