@@ -55,13 +55,15 @@ export default function AdminProductsPage() {
   const normalizedSearch = search.trim().toLowerCase();
   const filteredProducts = products.filter((p) => {
     const name = (p.name ?? "").toLowerCase();
-    const category = (p.category ?? "").toLowerCase();
+    const ownerName = p.createdBy
+      ? `${p.createdBy.firstName ?? ""} ${p.createdBy.lastName ?? ""}`.toLowerCase()
+      : "";
     const status = (p.status ?? "active").toLowerCase();
 
     const matchesSearch =
       !normalizedSearch ||
       name.includes(normalizedSearch) ||
-      category.includes(normalizedSearch);
+      ownerName.includes(normalizedSearch);
     const matchesStatus =
       statusFilter === "all" || status === statusFilter.toLowerCase();
 
@@ -109,7 +111,7 @@ export default function AdminProductsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or category..."
+            placeholder="Search by name or owner..."
             className="w-full px-3 py-2.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
           />
         </div>
@@ -156,9 +158,6 @@ export default function AdminProductsPage() {
                       Product
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                      Category
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                       Price
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -166,6 +165,9 @@ export default function AdminProductsPage() {
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                       Status
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                      Owner
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                       Created
@@ -214,7 +216,6 @@ export default function AdminProductsPage() {
                           </div>
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-slate-700">{p.category}</td>
                       <td className="px-4 py-3 text-slate-700">
                         ${p.price?.toFixed(2)}
                       </td>
@@ -231,6 +232,18 @@ export default function AdminProductsPage() {
                         >
                           {p.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {p.createdBy ? (
+                          <Link
+                            href={`/admin/users/${p.createdBy._id}`}
+                            className="text-slate-900 font-medium underline-offset-2 hover:underline"
+                          >
+                            {p.createdBy.firstName} {p.createdBy.lastName}
+                          </Link>
+                        ) : (
+                          <span className="text-slate-500">-</span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-slate-700">
                         {p.createdAt

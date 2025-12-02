@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { MdShoppingCart, MdArrowBack } from "react-icons/md";
 
 const API_URL =
@@ -229,6 +230,21 @@ export default function AdminProductDetailPage() {
                 </label>
                 <p className="text-sm text-slate-900">{product.quantity}</p>
               </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Owner
+              </label>
+              {product.createdBy ? (
+                <Link
+                  href={`/admin/users/${product.createdBy._id}`}
+                  className="text-sm text-slate-900 font-medium underline-offset-2 hover:underline"
+                >
+                  {product.createdBy.firstName} {product.createdBy.lastName}
+                </Link>
+              ) : (
+                <p className="text-sm text-slate-500">-</p>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
