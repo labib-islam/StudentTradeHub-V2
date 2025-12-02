@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
-import { fetchOrderById, updateOrderStatus } from "@/libs/utlis";
+import { fetchOrderById, updateOrderStatus, createReview, skipReview, getReviewByOrder } from "@/libs/utlis";
+import ReviewModal from "@/components/ReviewModal";
 
 const formatDateTime = (value) => {
   if (!value) return "";
@@ -60,11 +61,26 @@ export default function OrderDetailPage() {
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [existingReview, setExistingReview] = useState(null);
+  const [loadingReview, setLoadingReview] = useState(false);
 
   const isSeller = useMemo(() => {
     if (!order || !user) return false;
     return order.seller?._id === user._id;
   }, [order, user]);
+
+  const isBuyer = useMemo(() => {
+    if (!order || !user) return false;
+    return order.buyer?._id === user._id;
+  }, [order, user]);
+
+  const canReview = useMemo(() => {
+    if (!order || !isBuyer) return false;
+    const isCompleted = order.fulfillmentStatus === "delivered" || order.fulfillmentStatus === "picked_up";
+    // Can review if order is completed and not yet reviewed (ignore reviewSkipped for order details page)
+    return isCompleted && !order.isReviewed;
+  }, [order, isBuyer]);
 
   const deliveryType = order?.deliveryType || "pickup";
   const pipeline = getPipeline(deliveryType);
@@ -97,6 +113,23 @@ export default function OrderDetailPage() {
     load();
   }, [id]);
 
+  // Fetch existing review if order is reviewed
+  useEffect(() => {
+    const loadReview = async () => {
+      if (!order || !isBuyer || !order.isReviewed) return;
+      try {
+        setLoadingReview(true);
+        const review = await getReviewByOrder(order._id);
+        setExistingReview(review);
+      } catch (err) {
+        console.error("Failed to load review:", err);
+      } finally {
+        setLoadingReview(false);
+      }
+    };
+    loadReview();
+  }, [order, isBuyer]);
+
   const handleStatusChange = async (status) => {
     if (!order || !status) return;
     try {
@@ -111,6 +144,35 @@ export default function OrderDetailPage() {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleSubmitReview = async (orderId, rating, comment) => {
+    try {
+      await createReview(orderId, rating, comment);
+      setShowReviewModal(false);
+      // Refresh order to update review status
+      const updatedOrder = await fetchOrderById(id);
+      setOrder(updatedOrder);
+      setUpdateSuccess("Review submitted successfully!");
+    } catch (err) {
+      setUpdateError(err.message || "Failed to submit review");
+    }
+  };
+
+  const handleSkipReview = async (orderId) => {
+    try {
+      await skipReview(orderId);
+      setShowReviewModal(false);
+      // Refresh order to update review status
+      const updatedOrder = await fetchOrderById(id);
+      setOrder(updatedOrder);
+    } catch (err) {
+      console.error("Failed to skip review:", err);
+    }
+  };
+
+  const handleCloseReviewModal = () => {
+    setShowReviewModal(false);
   };
 
   return (
@@ -214,6 +276,13 @@ export default function OrderDetailPage() {
                       <p className="text-slate-600 text-xs">
                         {order.seller?.email}
                       </p>
+                      {order.seller?.sellerRating?.totalReviews > 0 && (
+                        <div className="text-xs text-yellow-600 font-medium flex items-center gap-0.5 mt-1">
+                          <span>★</span>
+                          <span>{order.seller.sellerRating.averageRating.toFixed(1)}</span>
+                          <span className="text-slate-500">({order.seller.sellerRating.totalReviews})</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -257,13 +326,12 @@ export default function OrderDetailPage() {
                       return (
                         <span
                           key={step}
-                          className={`px-3 py-1 rounded-full border ${
-                            completed
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                              : current
+                          className={`px-3 py-1 rounded-full border ${completed
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                            : current
                               ? "bg-slate-900 text-white border-slate-900"
                               : "bg-slate-50 text-slate-600 border-slate-200"
-                          }`}
+                            }`}
                         >
                           {idx + 1}. {statusLabel(step)}
                         </span>
@@ -289,11 +357,10 @@ export default function OrderDetailPage() {
                           type="button"
                           disabled={updating}
                           onClick={() => handleStatusChange(st)}
-                          className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                            st === "cancelled"
-                              ? "border-rose-500 text-rose-700 hover:bg-rose-50"
-                              : "border-slate-300 text-slate-700 hover:bg-slate-100"
-                          } disabled:opacity-60 disabled:cursor-not-allowed`}
+                          className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${st === "cancelled"
+                            ? "border-rose-500 text-rose-700 hover:bg-rose-50"
+                            : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                            } disabled:opacity-60 disabled:cursor-not-allowed`}
                         >
                           {statusLabel(st)}
                         </button>
@@ -310,6 +377,82 @@ export default function OrderDetailPage() {
                   </div>
                 )}
               </section>
+
+              {/* Review Section - Only for buyers on completed orders */}
+              {canReview && (
+                <section className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-sm">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        How was your experience?
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Share your feedback about this purchase and help other students make informed decisions.
+                      </p>
+                      <button
+                        onClick={() => setShowReviewModal(true)}
+                        className="px-6 py-3 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-700 transition-colors"
+                      >
+                        Write a Review
+                      </button>
+                    </div>
+                    <div className="text-4xl">⭐</div>
+                  </div>
+                </section>
+              )}
+
+              {/* Show if already reviewed */}
+              {isBuyer && order.isReviewed && (
+                <section className="bg-white border-2 border-green-200 rounded-2xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-green-600 text-2xl">✓</span>
+                    <span className="text-lg font-semibold text-gray-900">Thank you for your feedback!</span>
+                  </div>
+
+                  {loadingReview ? (
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-300 border-t-slate-600" />
+                      <span>Loading your review...</span>
+                    </div>
+                  ) : existingReview ? (
+                    <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                          Your Review
+                        </p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span
+                                key={star}
+                                className={`text-xl ${star <= existingReview.rating
+                                  ? "text-yellow-400"
+                                  : "text-slate-300"
+                                  }`}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-700">
+                            {existingReview.rating} out of 5
+                          </span>
+                        </div>
+                        {existingReview.comment && (
+                          <p className="text-sm text-slate-700 italic">
+                            &ldquo;{existingReview.comment}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500">
+                        Reviewed on {formatDateTime(existingReview.createdAt)}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-600">Your review has been submitted successfully.</p>
+                  )}
+                </section>
+              )}
 
               {/* Payment + addresses */}
               <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -395,6 +538,16 @@ export default function OrderDetailPage() {
                 </div>
               </section>
             </div>
+          )}
+
+          {/* Review Modal */}
+          {showReviewModal && order && (
+            <ReviewModal
+              order={order}
+              onClose={handleCloseReviewModal}
+              onSubmit={handleSubmitReview}
+              onSkip={handleSkipReview}
+            />
           )}
         </div>
       </div>

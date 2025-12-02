@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MdShoppingCart, MdEdit, MdDelete } from "react-icons/md";
 
-export default function ProductCard({ 
-  product, 
-  currentUserId, 
-  onEdit, 
-  onDelete 
+export default function ProductCard({
+  product,
+  currentUserId,
+  onEdit,
+  onDelete
 }) {
   const [imageError, setImageError] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -16,7 +16,7 @@ export default function ProductCard({
 
   // Check if current user is the product owner
   const isOwner = currentUserId && (
-    product.createdBy?._id === currentUserId || 
+    product.createdBy?._id === currentUserId ||
     product.createdBy === currentUserId
   );
 
@@ -132,13 +132,12 @@ export default function ProductCard({
         {/* Condition Badge */}
         {product.condition && (
           <div className="mb-2">
-            <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${
-              product.condition === "Brand New" ? "bg-emerald-50 text-emerald-700 border border-emerald-100" :
+            <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${product.condition === "Brand New" ? "bg-emerald-50 text-emerald-700 border border-emerald-100" :
               product.condition === "Like New" ? "bg-sky-50 text-sky-700 border border-sky-100" :
-              product.condition === "Good" ? "bg-amber-50 text-amber-700 border border-amber-100" :
-              product.condition === "Used" ? "bg-slate-50 text-slate-700 border border-slate-200" :
-              "bg-rose-50 text-rose-700 border border-rose-100"
-            }`}>
+                product.condition === "Good" ? "bg-amber-50 text-amber-700 border border-amber-100" :
+                  product.condition === "Used" ? "bg-slate-50 text-slate-700 border border-slate-200" :
+                    "bg-rose-50 text-rose-700 border border-rose-100"
+              }`}>
               {product.condition}
             </span>
           </div>
@@ -180,9 +179,18 @@ export default function ProductCard({
             <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-semibold text-xs mr-2">
               {product.createdBy.firstName?.[0]}{product.createdBy.lastName?.[0]}
             </div>
-            <span className="text-gray-700">
-              {product.createdBy.firstName} {product.createdBy.lastName}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-gray-700">
+                {product.createdBy.firstName} {product.createdBy.lastName}
+              </span>
+              {product.createdBy.sellerRating?.totalReviews > 0 && (
+                <span className="text-xs text-yellow-500 font-medium flex items-center gap-0.5">
+                  <span>★</span>
+                  <span>{product.createdBy.sellerRating.averageRating.toFixed(1)}</span>
+                  <span className="text-slate-500">({product.createdBy.sellerRating.totalReviews})</span>
+                </span>
+              )}
+            </div>
           </div>
         )}
 
@@ -211,11 +219,10 @@ export default function ProductCard({
           </div>
         ) : (
           <button
-            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
-              product.quantity > 0
-                ? "bg-slate-900 text-white hover:bg-slate-700"
-                : "bg-slate-200 text-gray-500 cursor-not-allowed"
-            }`}
+            className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${product.quantity > 0
+              ? "bg-slate-900 text-white hover:bg-slate-700"
+              : "bg-slate-200 text-gray-500 cursor-not-allowed"
+              }`}
             onClick={handleViewDetails}
             disabled={product.quantity === 0}
           >

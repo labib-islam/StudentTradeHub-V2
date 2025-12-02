@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import ReviewPrompt from "@/components/ReviewPrompt";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { SearchProvider } from "@/context/SearchContext";
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <SearchProvider>
             <Navbar />
+            <ReviewPrompt />
             {children}
           </SearchProvider>
         </AuthProvider>
