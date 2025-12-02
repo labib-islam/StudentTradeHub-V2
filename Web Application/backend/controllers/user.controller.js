@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import Order from "../models/order.model.js";
 import bcrypt from "bcrypt";
 
 const buildSafePaymentSnapshot = (payment) => {
@@ -338,6 +339,68 @@ const updateUserPreferences = async (req, res) => {
   }
 };
 
+// Admin: get activity summary for a specific user
+const getUserActivitySummary = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("productList");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const [boughtCount, soldCount] = await Promise.all([
+      Order.countDocuments({ buyer: id }),
+      Order.countDocuments({ seller: id }),
+    ]);
+
+    const productCount = Array.isArray(user.productList)
+      ? user.productList.length
+      : 0;
+
+    res.status(200).json({
+      productCount,
+      boughtCount,
+      soldCount,
+    });
+  } catch (err) {
+    console.error("Error fetching user activity summary:", err.message);
+    res.status(500).json({ message: "Failed to fetch user activity." });
+  }
+};
+
+// Admin: update user status (active/blocked)
+const updateUserStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!["active", "blocked"].includes(status)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid status. Must be 'active' or 'blocked'." });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: "User status updated successfully.",
+      user,
+    });
+  } catch (err) {
+    console.error("Error updating user status:", err.message);
+    res.status(500).json({ message: "Failed to update user status." });
+  }
+};
+
 export default {
   getAllUsers,
   getUserById,
@@ -349,4 +412,6 @@ export default {
   addPaymentMethod,
   getUserPreferences,
   updateUserPreferences,
+  getUserActivitySummary,
+  updateUserStatus,
 };

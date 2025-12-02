@@ -6,6 +6,7 @@ const router = Router();
 
 router.post("/", checkAuth("user"), orderController.createOrder);
 router.get("/", checkAuth(), orderController.getOrdersForUser);
+router.get("/admin/user/:id", checkAuth("admin"), orderController.getOrdersForUserAdmin);
 router.get("/:id", checkAuth(), orderController.getOrderById);
 router.patch(
   "/:id/status",

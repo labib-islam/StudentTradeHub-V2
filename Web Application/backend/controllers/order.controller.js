@@ -295,10 +295,32 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+// Admin: Get orders for a specific user (buyer or seller)
+const getOrdersForUserAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // User ID from URL params
+    const role = (req.query.role || "buyer").toString(); // Filter by buyer or seller role
+
+    const filter = role === "seller" ? { seller: id } : { buyer: id };
+
+    const orders = await Order.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("product")
+      .populate("buyer", "firstName lastName email")
+      .populate("seller", "firstName lastName email");
+
+    res.status(200).json({ orders });
+  } catch (err) {
+    console.error("Failed to fetch orders for user (admin):", err.message);
+    res.status(500).json({ message: "Failed to fetch orders for user." });
+  }
+};
+
 export default {
   createOrder,
   getOrderById,
   getOrdersForUser,
   updateOrderStatus,
+  getOrdersForUserAdmin,
 };
 
