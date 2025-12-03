@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import EditProfile from "./EditProfile";
 import { useAuth } from "@/context/AuthContext";
 import { useSearch } from "@/context/SearchContext";
+import { fetchUserProfile } from "@/libs/utlis";
 
 export default function Navbar() {
     const { user, logout, checkAuth } = useAuth();
@@ -57,7 +58,7 @@ export default function Navbar() {
     ];
     const pathname = usePathname();
     const isAdmin = user?.role === "admin";
-    
+
     // Determine which filters to show based on current page
     const isBuyPage = !isAdmin && pathname === "/buy";
     const isSellPage = !isAdmin && pathname === "/sell";
@@ -68,25 +69,22 @@ export default function Navbar() {
 
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
+        const loadUserProfile = async () => {
             try {
-                if (user) {
+                if (user && user._id) {
                     // Fetch user profile from the users table
-                    fetchUserProfile(user.id).then(profileData => {
-                        setUserData(profileData);
-                    }).catch(error => {
-                        console.error("Failed to fetch user profile:", error);
-                    });
+                    const profileData = await fetchUserProfile(user._id);
+                    setUserData(profileData);
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error("Failed to fetch user profile:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUserProfile();
-    }, []);
+        loadUserProfile();
+    }, [user]);
 
     const handleSignOut = async () => {
         try {
