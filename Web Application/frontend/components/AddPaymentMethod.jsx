@@ -80,9 +80,10 @@ export default function AddPaymentMethod() {
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {/* Cardholder Name */}
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-2">Cardholder Name</label>
+          <label htmlFor="cardName" className="block text-sm font-semibold text-gray-900 mb-2">Cardholder Name</label>
           <input
             type="text"
+            id="cardName"
             name="cardName"
             value={formData.cardName}
             onChange={handleChange}
@@ -94,9 +95,10 @@ export default function AddPaymentMethod() {
 
         {/* Card Number */}
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-2">Card Number</label>
+          <label htmlFor="cardNumber" className="block text-sm font-semibold text-gray-900 mb-2">Card Number</label>
           <input
             type="text"
+            id="cardNumber"
             name="cardNumber"
             value={formData.cardNumber}
             onChange={handleChange}
@@ -111,9 +113,10 @@ export default function AddPaymentMethod() {
         {/* Expiry Date and CVV */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">Expiry Date</label>
+            <label htmlFor="expiryDate" className="block text-sm font-semibold text-gray-900 mb-2">Expiry Date</label>
             <input
               type="text"
+              id="expiryDate"
               name="expiryDate"
               value={formData.expiryDate}
               onChange={handleChange}
@@ -124,9 +127,10 @@ export default function AddPaymentMethod() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">CVV</label>
+            <label htmlFor="cvv" className="block text-sm font-semibold text-gray-900 mb-2">CVV</label>
             <input
               type="password"
+              id="cvv"
               name="cvv"
               value={formData.cvv}
               onChange={handleChange}
@@ -141,8 +145,9 @@ export default function AddPaymentMethod() {
 
         {/* Card Type Dropdown */}
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-2">Card Type</label>
+          <label htmlFor="type" className="block text-sm font-semibold text-gray-900 mb-2">Card Type</label>
           <select
+            id="type"
             name="type"
             value={formData.type}
             onChange={handleChange}
@@ -159,11 +164,10 @@ export default function AddPaymentMethod() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 px-4 rounded-lg font-semibold ${
-            loading
+          className={`w-full py-3 px-4 rounded-lg font-semibold ${loading
               ? "bg-slate-400 cursor-not-allowed text-white"
               : "bg-slate-900 hover:bg-slate-700 text-white transition-colors"
-          }`}
+            }`}
         >
           {loading ? "Saving..." : "Add Payment Method"}
         </button>

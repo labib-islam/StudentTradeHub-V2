@@ -3,7 +3,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8800';
 
 // User-related functions
 export const fetchUserProfile = async (userId) => {
-    const res = await fetch(`${API_URL}/api/users/${userId}`);
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_URL}/api/users/${userId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
     if (res.ok) {
         return await res.json();
     } else {
