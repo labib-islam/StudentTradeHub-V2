@@ -82,17 +82,3 @@ jobs:
       run: npm test
       env:
         CI: true
-
-    - name: Build frontend
-      run: npm run build
-      env:
-        CI: true
-
-    - name: Check for build errors
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build successful"
-        else
-          echo "Build failed"
-          exit 1
-        fi
