@@ -33,7 +33,7 @@ app.use(
 if (process.env.NODE_ENV !== 'test') {
   mongoose
     .connect(
-      `mongodb+srv://nafiurr_db_user:${process.env.DB_PASSWORD}@cluster0.7vcu4dk.mongodb.net/?appName=Cluster0`
+      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.we8cyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
     )
     .then(() => {
       app.listen(port);
