@@ -45,7 +45,12 @@ export default function SellPage() {
                     const product = await fetchProductById(editProductId);
                     // Verify user owns this product
                     if (product.createdBy?._id === user?._id || product.createdBy === user?._id) {
-                        setEditingProduct(product);
+                        // Transform product data to include imageUrl for preview
+                        const productWithImageUrl = {
+                            ...product,
+                            imageUrl: product.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8800'}/${product.imageUrl}` : null
+                        };
+                        setEditingProduct(productWithImageUrl);
                         setActiveTab("add");
                     }
                 } catch (err) {

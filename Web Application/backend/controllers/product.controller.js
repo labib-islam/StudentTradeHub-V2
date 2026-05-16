@@ -260,6 +260,23 @@ const updateProduct = async (req, res) => {
       product.status = status;
     }
 
+    // Handle image update
+    if (req.file) {
+      // Delete old image file if it exists
+      if (product.imageUrl) {
+        const oldImagePath = path.resolve(product.imageUrl);
+        if (fs.existsSync(oldImagePath)) {
+          try {
+            fs.unlinkSync(oldImagePath);
+          } catch (err) {
+            console.error("Error deleting old image:", err);
+          }
+        }
+      }
+      // Update with new image path
+      product.imageUrl = req.file.path;
+    }
+
     await product.save();
 
     return res.json({ product });

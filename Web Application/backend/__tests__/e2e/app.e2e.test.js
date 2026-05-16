@@ -15,7 +15,13 @@ describe("App Acceptance (E2E) Tests", () => {
   beforeAll(() => {
     // Prepare a fake image file for testing the /public/images static route
     // Use the actual public/images directory in the backend root
-    const publicImagesDir = path.join(__dirname, "..", "..", "public", "images");
+    const publicImagesDir = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "images"
+    );
 
     if (!fs.existsSync(publicImagesDir)) {
       fs.mkdirSync(publicImagesDir, { recursive: true });

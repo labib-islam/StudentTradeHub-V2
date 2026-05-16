@@ -15,7 +15,12 @@ router.post(
   productController.createProduct
 );
 router.patch("/:pid/status", checkAuth("admin"), productController.updateProductStatusAdmin);
-router.patch("/:pid", checkAuth("user"), productController.updateProduct);
+router.patch(
+  "/:pid",
+  checkAuth("user"),
+  fileUpload.single("image"),
+  productController.updateProduct
+);
 router.get("/:pid", checkAuth(), productController.getProductById);
 router.delete("/:pid", checkAuth("user"), productController.deleteProduct);
 

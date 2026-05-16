@@ -181,23 +181,28 @@ export const updateProduct = async (productId, formData) => {
             throw new Error("Please login to update products");
         }
 
-        const updateData = {
-            name: formData.name,
-            description: formData.description,
-            price: formData.price,
-            category: formData.category,
-            quantity: formData.quantity,
-            status: formData.status,
-            condition: formData.condition,
-        };
+        // Create FormData to handle file upload
+        const updateData = new FormData();
+        updateData.append("name", formData.name);
+        updateData.append("description", formData.description);
+        updateData.append("price", formData.price);
+        updateData.append("category", formData.category);
+        updateData.append("quantity", formData.quantity);
+        updateData.append("status", formData.status);
+        updateData.append("condition", formData.condition);
+        
+        // Only append image if a new one was selected
+        if (formData.image) {
+            updateData.append("image", formData.image);
+        }
 
         const response = await fetch(`${API_URL}/api/products/${productId}`, {
             method: "PATCH",
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+                // Don't set Content-Type header - browser will set it with boundary for FormData
             },
-            body: JSON.stringify(updateData),
+            body: updateData,
         });
 
         const data = await response.json();
