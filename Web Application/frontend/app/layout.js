@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { SearchProvider } from "@/context/SearchContext";
 import Loading from "@/components/Loading";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Student Trade Hub",
