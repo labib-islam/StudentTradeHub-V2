@@ -24,7 +24,7 @@ const port = process.env.PORT || 8800;
 // Allow requests from frontend
 app.use(
   cors({
-    origin: ["*", "http://localhost:3000", process.env.FRONTEND_URL],
+    origin: ["http://localhost:3000", process.env.FRONTEND_URL],
     credentials: true, // allow cookies
   })
 );
