@@ -47,7 +47,6 @@ export default function ProductForm({
             ...prev,
             [name]: value,
         }));
-        console.log("Form data:", formData);
         setError(null);
     };
 
