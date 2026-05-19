@@ -3,6 +3,7 @@ import ReviewPrompt from "@/components/ReviewPrompt";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { SearchProvider } from "@/context/SearchContext";
+import Loading from "@/components/Loading";
 
 export const metadata = {
   title: "Student Trade Hub",
@@ -19,7 +20,7 @@ export default function RootLayout({ children }) {
           <SearchProvider>
             <Navbar />
             <ReviewPrompt />
-            {children}
+            <Suspense fallback={<Loading fullScreen />}>{children}</Suspense>
           </SearchProvider>
         </AuthProvider>
       </body>
