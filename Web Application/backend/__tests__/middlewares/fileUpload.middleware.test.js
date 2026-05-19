@@ -20,20 +20,14 @@ const multerMock = jest.fn((config) => {
   };
 });
 
-multerMock.diskStorage = jest.fn((opts) => {
-  capturedStorageOptions = opts;
+multerMock.memoryStorage = jest.fn(() => {
+  capturedStorageOptions = { memory: true };
   return { _storage: true };
 });
-
-const uuidMock = jest.fn(() => "test-uuid");
 
 // mock modules BEFORE importing fileUpload.middleware.js
 jest.unstable_mockModule("multer", () => ({
   default: multerMock,
-}));
-
-jest.unstable_mockModule("uuid", () => ({
-  v4: uuidMock,
 }));
 
 let fileUpload;
@@ -91,26 +85,4 @@ describe("fileUpload middleware", () => {
     expect(err.message).toBe("Invalid mime type!");
   });
 
-  test("destination stores files in public/images", () => {
-    const { destination } = capturedStorageOptions;
-    const cb = jest.fn();
-    const req = {};
-    const file = { mimetype: "image/png" };
-
-    destination(req, file, cb);
-
-    expect(cb).toHaveBeenCalledWith(null, "public/images");
-  });
-
-  test("filename uses uuid and correct extension", () => {
-    const { filename } = capturedStorageOptions;
-    const cb = jest.fn();
-    const req = {};
-    const file = { mimetype: "image/jpeg" };
-
-    filename(req, file, cb);
-
-    expect(uuidMock).toHaveBeenCalled();
-    expect(cb).toHaveBeenCalledWith(null, "test-uuid.jpeg");
-  });
 });

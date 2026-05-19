@@ -284,6 +284,16 @@ describe('Buy Page', () => {
     });
 
     describe('API Integration', () => {
+        it('does not fetch products when user is logged out', async () => {
+            useAuth.mockReturnValue({ user: null, loading: false });
+
+            render(<BuyPage />);
+
+            await waitFor(() => {
+                expect(fetch).not.toHaveBeenCalled();
+            });
+        });
+
         it('includes authorization token in request', async () => {
             useAuth.mockReturnValue({ user: { _id: 'user-123' } });
             fetch.mockResolvedValueOnce({

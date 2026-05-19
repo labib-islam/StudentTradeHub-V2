@@ -50,7 +50,7 @@ const ReviewModal = ({ order, onClose, onSubmit, onSkip }) => {
                             <div className="w-16 h-16 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                                 {order.product?.imageUrl ? (
                                     <img
-                                        src={`${API_URL}/${order.product.imageUrl}`}
+                                        src={order.product.imageUrl}
                                         alt={order.product?.name || "Product"}
                                         className="w-full h-full object-cover"
                                     />

@@ -285,7 +285,7 @@ export default function AdminOrdersPage() {
                           <div className="relative w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                             {o.product?.imageUrl ? (
                               <img
-                                src={`${API_URL}/${o.product.imageUrl}`}
+                                src={o.product.imageUrl}
                                 alt={o.product?.name || "Product"}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

@@ -395,7 +395,7 @@ function ProductCard({ product: p }) {
       <div className="relative h-40 bg-slate-100 flex items-center justify-center overflow-hidden">
         {p.imageUrl && !imageError ? (
           <img
-            src={`${API_URL}/${p.imageUrl}`}
+            src={p.imageUrl}
             alt={p.name}
             className="w-full h-full object-cover"
             onError={() => setImageError(true)}
@@ -526,7 +526,7 @@ function OrderCard({ order: o }) {
         <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
           {o.product?.imageUrl && !imageError ? (
             <img
-              src={`${API_URL}/${o.product.imageUrl}`}
+              src={o.product.imageUrl}
               alt={o.product?.name || "Product"}
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}

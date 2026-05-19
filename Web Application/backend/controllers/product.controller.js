@@ -1,16 +1,66 @@
-import fs from "fs";
-import path from "path";
 import mongoose from "mongoose";
 import Product from "../models/product.model.js";
 import User from "../models/user.model.js";
 import Order from "../models/order.model.js";
+import cloudinary, { isCloudinaryConfigured } from "../utils/cloudinary.js";
 
 const toNum = (v) => (v === undefined ? undefined : Number(v));
 const toBool = (v) =>
   v === undefined ? undefined : ["true", "1", "yes"].includes(String(v).toLowerCase());
 const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const uploadProductImage = async (file) => {
+  if (!file) {
+    throw new Error("Product image is required");
+  }
+
+  if (!isCloudinaryConfigured) {
+    throw new Error("Cloudinary is not configured");
+  }
+
+  if (!file.buffer) {
+    throw new Error("Uploaded image buffer is missing");
+  }
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "student-tradehub/products",
+        resource_type: "image",
+        transformation: [{ quality: "auto", fetch_format: "auto" }],
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve({
+          imageUrl: result.secure_url,
+          imagePublicId: result.public_id,
+        });
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+};
+
+const deleteStoredImage = async (imagePublicId) => {
+  if (!imagePublicId) {
+    return;
+  }
+
+  try {
+    await cloudinary.uploader.destroy(imagePublicId);
+  } catch (err) {
+    console.warn("Failed to delete Cloudinary image:", err.message);
+  }
+};
+
 const createProduct = async (req, res) => {
+  let uploadedImage = null;
+
   try {
     const { name, description, price, category, quantity, status, condition } = req.body;
 
@@ -28,6 +78,11 @@ const createProduct = async (req, res) => {
     // Only allow "active" or "draft" status, default to "active"
     const productStatus = status && ["active", "draft"].includes(status) ? status : "active";
 
+    const user = await User.findById(req.userData.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    uploadedImage = await uploadProductImage(req.file);
+
     // Create new product
     const newProduct = new Product({
       name,
@@ -35,16 +90,12 @@ const createProduct = async (req, res) => {
       price,
       category,
       quantity,
-      imageUrl: req.file.path,
+      imageUrl: uploadedImage.imageUrl,
+      imagePublicId: uploadedImage.imagePublicId,
       status: productStatus,
       condition,
       createdBy: req.userData.userId,
     });
-
-
-    // Associate product with user
-    const user = await User.findById(req.userData.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
 
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -55,6 +106,9 @@ const createProduct = async (req, res) => {
 
     return res.status(201).json({ product: newProduct });
   } catch (err) {
+    if (uploadedImage) {
+      await deleteStoredImage(uploadedImage.imagePublicId);
+    }
     console.error(err.message);
     res.status(500).json({ message: err.message });
   }
@@ -209,6 +263,9 @@ const getProductById = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
+  let uploadedImage = null;
+  let previousImage = null;
+
   try {
     const { name, description, price, category, quantity, status, condition } = req.body;
     const pid = req.params.pid;
@@ -262,25 +319,26 @@ const updateProduct = async (req, res) => {
 
     // Handle image update
     if (req.file) {
-      // Delete old image file if it exists
-      if (product.imageUrl) {
-        const oldImagePath = path.resolve(product.imageUrl);
-        if (fs.existsSync(oldImagePath)) {
-          try {
-            fs.unlinkSync(oldImagePath);
-          } catch (err) {
-            console.error("Error deleting old image:", err);
-          }
-        }
-      }
-      // Update with new image path
-      product.imageUrl = req.file.path;
+      previousImage = {
+        imagePublicId: product.imagePublicId,
+      };
+
+      uploadedImage = await uploadProductImage(req.file);
+      product.imageUrl = uploadedImage.imageUrl;
+      product.imagePublicId = uploadedImage.imagePublicId;
     }
 
     await product.save();
 
+    if (previousImage) {
+      await deleteStoredImage(previousImage.imagePublicId);
+    }
+
     return res.json({ product });
   } catch (err) {
+    if (uploadedImage) {
+      await deleteStoredImage(uploadedImage.imagePublicId);
+    }
     console.error("Error updating product:", err);
     res.status(500).send();
   }
@@ -313,7 +371,7 @@ const deleteProduct = async (req, res) => {
         .json({ message: "You are not allowed to delete this product." });
     }
 
-    const imagePath = product.imageUrl;
+    const imagePublicId = product.imagePublicId;
 
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -327,12 +385,7 @@ const deleteProduct = async (req, res) => {
 
     await sess.commitTransaction();
 
-    // Delete local image
-    if (imagePath && fs.existsSync(imagePath)) {
-      fs.unlink(imagePath, (err) => {
-        if (err) console.warn("Failed to delete image:", err.message);
-      });
-    }
+    await deleteStoredImage(imagePublicId);
 
     res.status(200).json({ message: "Product deleted successfully." });
   } catch (err) {

@@ -138,7 +138,7 @@ export default function ProductDetailsPage() {
               <div className="bg-slate-100 rounded-xl h-80 flex items-center justify-center overflow-hidden">
                 {product.imageUrl ? (
                   <img
-                    src={`${API_URL}/${product.imageUrl}`}
+                    src={product.imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />

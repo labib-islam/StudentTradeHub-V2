@@ -10,37 +10,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 describe("App Acceptance (E2E) Tests", () => {
-  let testImagePath;
-
-  beforeAll(() => {
-    // Prepare a fake image file for testing the /public/images static route
-    // Use the actual public/images directory in the backend root
-    const publicImagesDir = path.join(
-      __dirname,
-      "..",
-      "..",
-      "public",
-      "images"
-    );
-
-    if (!fs.existsSync(publicImagesDir)) {
-      fs.mkdirSync(publicImagesDir, { recursive: true });
-    }
-
-    testImagePath = path.join(publicImagesDir, "test-image.jpg");
-
-    // The content doesn't need to be a real image; the static server doesn't check
-    if (!fs.existsSync(testImagePath)) {
-      fs.writeFileSync(testImagePath, "dummy image content");
-    }
-  });
-
-  afterAll(() => {
-    // Clean up the test file we created
-    if (testImagePath && fs.existsSync(testImagePath)) {
-      fs.unlinkSync(testImagePath);
-    }
-  });
 
   test("GET / should return 200 and respond with 'Student-Tradehub'", async () => {
     const res = await request(app).get("/");
@@ -67,11 +36,5 @@ describe("App Acceptance (E2E) Tests", () => {
     );
   });
 
-  test("Static files under /public/images should be served correctly", async () => {
-    const res = await request(app).get("/public/images/test-image.jpg");
-
-    expect(res.status).toBe(200);
-    // Either text or buffer is fine as long as it's not empty
-    expect(res.text || res.body).toBeDefined();
-  });
+  // Static files route removed; no test for /public/images
 });

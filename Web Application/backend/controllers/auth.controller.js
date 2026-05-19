@@ -146,7 +146,6 @@ const getCurrentUser = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded);
     const existingUser = await User.findOne({ email: decoded.userEmail }).select("+password");
 
     if (!existingUser) {

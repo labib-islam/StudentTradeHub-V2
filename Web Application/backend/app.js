@@ -33,7 +33,7 @@ app.use(
 if (process.env.NODE_ENV !== 'test') {
   mongoose
     .connect(
-      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.we8cyvi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ezhwwoc.mongodb.net/?appName=Cluster0`
     )
     .then(() => {
       app.listen(port);
@@ -46,8 +46,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Middleware: To parse incoming JSON request
 app.use(express.json());
-// Middleware: To serve static files
-app.use("/public/images", express.static(path.join("public", "images")));
+
 
 // Routes
 app.get("/", (req, res) => res.send("Student-Tradehub"));

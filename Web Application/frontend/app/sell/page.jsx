@@ -48,7 +48,7 @@ export default function SellPage() {
                         // Transform product data to include imageUrl for preview
                         const productWithImageUrl = {
                             ...product,
-                            imageUrl: product.imageUrl ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8800'}/${product.imageUrl}` : null
+                            imageUrl: product.imageUrl || null
                         };
                         setEditingProduct(productWithImageUrl);
                         setActiveTab("add");

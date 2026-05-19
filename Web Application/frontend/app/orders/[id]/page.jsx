@@ -227,7 +227,7 @@ export default function OrderDetailPage() {
                 <div className="w-full sm:w-40 h-40 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {order.product?.imageUrl ? (
                     <img
-                      src={`http://localhost:8800/${order.product.imageUrl}`}
+                      src={order.product.imageUrl}
                       alt={order.product.name}
                       className="w-full h-full object-cover"
                     />

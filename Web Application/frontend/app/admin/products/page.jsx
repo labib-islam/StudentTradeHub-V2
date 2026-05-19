@@ -188,7 +188,7 @@ export default function AdminProductsPage() {
                           <div className="relative w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                             {p.imageUrl ? (
                               <img
-                                src={`${API_URL}/${p.imageUrl}`}
+                                src={p.imageUrl}
                                 alt={p.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

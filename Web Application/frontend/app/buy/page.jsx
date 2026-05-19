@@ -10,10 +10,14 @@ export default function BuyPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { searchTerm, selectedCategory, selectedCondition } = useSearch();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
 
     // Fetch products from backend with filters
     useEffect(() => {
+        if (authLoading || !user || user.role !== 'user') {
+            return;
+        }
+
         const fetchProducts = async () => {
             try {
                 setLoading(true);
@@ -71,7 +75,7 @@ export default function BuyPage() {
         };
 
         fetchProducts();
-    }, [searchTerm, selectedCategory, selectedCondition, user?._id]);
+    }, [authLoading, searchTerm, selectedCategory, selectedCondition, user]);
 
     return (
         <UserRoute>

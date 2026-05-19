@@ -152,7 +152,7 @@ export default function AdminProductDetailPage() {
           <div className="relative w-full aspect-square bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden">
             {product.imageUrl && !imageError ? (
               <img
-                src={`${API_URL}/${product.imageUrl}`}
+                src={product.imageUrl}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 onError={() => setImageError(true)}

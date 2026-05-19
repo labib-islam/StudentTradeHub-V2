@@ -105,7 +105,7 @@ export default function ProductCard({
       <div className="relative h-56 bg-slate-100 flex items-center justify-center overflow-hidden">
         {product.imageUrl && !imageError ? (
           <img
-            src={`http://localhost:8800/${product.imageUrl}`}
+            src={product.imageUrl}
             alt={product.name}
             className="w-full h-full object-cover"
             onError={() => setImageError(true)}
