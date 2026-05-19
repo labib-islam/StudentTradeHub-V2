@@ -7,6 +7,13 @@ import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.ut
 // Signup
 const signup = async (req, res) => {
   try {
+    // Disable signup in production where SMTP is not available (e.g. Railway)
+    if (process.env.NODE_ENV === "production") {
+      return res.status(403).json({
+        message:
+          "Signup is disabled in production mode because Railway blocks SMTP for personal mail accounts. Use the provided demo account to login and explore the features."
+      });
+    }
     const { firstName, lastName, email, password } = req.body;
 
     // Check for empty fields
