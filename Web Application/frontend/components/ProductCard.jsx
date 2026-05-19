@@ -46,6 +46,7 @@ export default function ProductCard({
 
   const handleDelete = async (event) => {
     event.stopPropagation();
+    event.preventDefault();
     if (window.confirm("Are you sure you want to delete this product?")) {
       setIsDeleting(true);
       if (onDelete) {
@@ -194,30 +195,8 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Action Buttons */}
-        {isManagementMode ? (
-          <div className="flex gap-3">
-            {onEdit && (
-              <button
-                onClick={handleEdit}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-700 text-white rounded-lg font-semibold transition-colors"
-              >
-                <MdEdit size={18} />
-                Edit
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <MdDelete size={18} />
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-            )}
-          </div>
-        ) : (
+        {/* Action Button for browse mode */}
+        {!isManagementMode && (
           <button
             className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${product.quantity > 0
               ? "bg-slate-900 text-white hover:bg-slate-700"
@@ -233,14 +212,40 @@ export default function ProductCard({
     </>
   );
 
-  // Always wrap in Link so owners can navigate to product detail page
-  // Edit/Delete buttons use stopPropagation to prevent navigation when clicked
+  const actionButtons = isManagementMode ? (
+    <div className="flex gap-3 p-5 pt-0">
+      {onEdit && (
+        <button
+          onClick={handleEdit}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-700 text-white rounded-lg font-semibold transition-colors"
+        >
+          <MdEdit size={18} />
+          Edit
+        </button>
+      )}
+      {onDelete && (
+        <button
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <MdDelete size={18} />
+          {isDeleting ? "Deleting..." : "Delete"}
+        </button>
+      )}
+    </div>
+  ) : null;
+
+  // Keep the card clickable, but keep management actions outside the navigation link.
   return (
-    <Link
-      href={`/product/${product._id}`}
-      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden border border-slate-200 flex flex-col h-full cursor-pointer"
-    >
-      {cardContent}
-    </Link>
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden border border-slate-200 flex flex-col h-full">
+      <Link
+        href={`/product/${product._id}`}
+        className="flex flex-col flex-grow cursor-pointer"
+      >
+        {cardContent}
+      </Link>
+      {actionButtons}
+    </div>
   );
 }
