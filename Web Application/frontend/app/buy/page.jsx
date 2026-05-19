@@ -5,6 +5,8 @@ import UserRoute from "@/components/UserRoute";
 import { useSearch } from "@/context/SearchContext";
 import { useAuth } from "@/context/AuthContext";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 export default function BuyPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ export default function BuyPage() {
                 params.append('status', 'active');
 
                 const token = localStorage.getItem("token");
-                const response = await fetch(`http://localhost:8800/api/products/?${params.toString()}`, {
+                const response = await fetch(`${API_URL}/api/products/?${params.toString()}`, {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
                 });
 

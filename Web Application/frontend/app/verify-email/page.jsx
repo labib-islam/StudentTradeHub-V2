@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 const VerifyEmail = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -23,7 +25,7 @@ const VerifyEmail = () => {
 
     const verifyEmailToken = async (verificationToken) => {
         try {
-            const response = await fetch('http://localhost:8800/api/auth/verify-email', {
+            const response = await fetch(`${API_URL}/api/auth/verify-email`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

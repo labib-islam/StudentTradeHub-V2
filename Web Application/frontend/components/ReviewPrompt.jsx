@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import ReviewModal from './ReviewModal';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 const ReviewPrompt = () => {
     const { user } = useAuth();
     const [pendingOrders, setPendingOrders] = useState([]);
@@ -23,7 +25,7 @@ const ReviewPrompt = () => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const response = await fetch('http://localhost:8800/api/reviews/pending', {
+            const response = await fetch(`${API_URL}/api/reviews/pending`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -44,7 +46,7 @@ const ReviewPrompt = () => {
     const handleSubmitReview = async (orderId, rating, comment) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8800/api/reviews', {
+            const response = await fetch(`${API_URL}/api/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ const ReviewPrompt = () => {
     const handleSkipReview = async (orderId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8800/api/reviews/skip', {
+            const response = await fetch(`${API_URL}/api/reviews/skip`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

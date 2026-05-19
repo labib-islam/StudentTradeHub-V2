@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PiEyeLight, PiEyeSlash } from 'react-icons/pi';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 const ResetPassword = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -78,7 +80,7 @@ const ResetPassword = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8800/api/auth/reset-password', {
+            const response = await fetch(`${API_URL}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

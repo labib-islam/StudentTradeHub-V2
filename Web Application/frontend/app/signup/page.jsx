@@ -4,6 +4,8 @@ import { PiEyeLight, PiEyeSlash } from 'react-icons/pi';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 const SignUp = () => {
     const router = useRouter();
     const { user, loading, signup, checkAuth } = useAuth();
@@ -128,7 +130,7 @@ const SignUp = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8800/api/auth/signup', {
+            const response = await fetch(`${API_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

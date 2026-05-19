@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { MdCreditCard } from "react-icons/md";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8800";
+
 export default function AddPaymentMethod() {
   const [formData, setFormData] = useState({
     cardName: "",
@@ -38,7 +40,7 @@ export default function AddPaymentMethod() {
         type: formData.type, // must match schema enum
       };
 
-      const res = await fetch("http://localhost:8800/api/users/payment/add", {
+      const res = await fetch(`${API_URL}/api/users/payment/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
