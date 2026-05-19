@@ -36,8 +36,10 @@ if (process.env.NODE_ENV !== 'test') {
       `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ezhwwoc.mongodb.net/?appName=Cluster0`
     )
     .then(() => {
-      app.listen(port);
-      console.log("Connected to Database");
+      app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+        console.log("Connected to Database");
+      });
     })
     .catch((err) => {
       console.log(err);
