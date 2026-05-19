@@ -7,7 +7,7 @@ import { sendPasswordResetEmail, sendVerificationEmail } from "../utils/email.ut
 // Signup
 const signup = async (req, res) => {
   try {
-    // Disable signup in production where SMTP is not available (e.g. Railway)
+    // Disabled signup in production where SMTP is not available 
     if (process.env.NODE_ENV === "production") {
       return res.status(403).json({
         message:

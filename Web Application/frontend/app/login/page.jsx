@@ -106,6 +106,11 @@ const Login = () => {
                 <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
                     <form onSubmit={handleSubmit}>
                         <h2 className="text-3xl mb-6 text-center font-bold text-gray-900">Login</h2>
+                        <div className="mb-4 p-4 bg-slate-50 border border-dashed rounded-lg text-sm">
+                            <p className="font-semibold text-gray-800 mb-1">Demo account</p>
+                            <p className="text-gray-600">Email: <span className="text-sm text-gray-800">demouser@mun.ca</span></p>
+                            <p className="text-gray-600">Password: <span className="text-sm text-gray-800">Demouser@123</span></p>
+                        </div>
                         {error && (
                             <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-lg">
                                 <p className="font-semibold">⚠ Error</p>
@@ -167,6 +172,8 @@ const Login = () => {
                             {isLoading ? 'Signing In...' : 'Sign In'}
                         </button>
                     </form>
+
+                    
 
                     <div className="mt-6 text-center space-y-2">
                         <a href="/forgot-password" className="block text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium">
